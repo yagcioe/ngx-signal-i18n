@@ -31,48 +31,52 @@ npm i ng-signal-i18n
     <option value="en">en</option>
     <option value="de">de</option>
   </select>
-  <hr/> <br/>
+  <hr /> <br />
 
-  <!-- simple access for non interpolated values -->
+  <h2>simple access for non interpolated values</h2>
   <h3>{{ translationService.translation().title}}</h3>
   <h3>{{ translationService.translation().simpleNest.str}}</h3>
   <h3>{{ translationService.translation().nest.title}}</h3>
-  <hr/> <br/>
+  <hr /> <br />
 
-  <!-- interpolated values from the ts file -->
+  <h2>interpolated values from the ts file</h2>
   <h3>{{ interpolatedTranslations().title }}</h3>
   <h3>{{ interpolatedTranslations().simpleNest.str }}</h3>
   <h3>{{ interpolatedTranslations().nest.title }}</h3>
   <h3>{{ interpolatedTranslations().nest.anotherInterpolatedValue()}}</h3>
   <h3>{{ interpolatedTranslations().interpolateable()}}</h3>
-  <hr/> <br/>
+  <hr /> <br />
 
-  <!-- inline interpolation with the interpolation pipe  -->
+  <h2>inline interpolation with the interpolation pipe</h2>
+  <!-- inline interpolation for strings is unessesary but possible -->
   <h3>{{ translationService.translation().title | interpolate: undefined }}</h3>
-  <!-- inline interpolation for strings is unessesary  -->
   <h3>{{ translationService.translation().simpleNest.str | interpolate: undefined}}</h3>
   <h3>{{ translationService.translation().nest.title | interpolate: undefined}}</h3>
-  <h3>{{ (translationService.translation().nest.anotherInterpolatedValue | interpolate: {num: numSignal})() }}</h3>
-  <!-- inline interpolation for parameterized translations  -->
-  <h3>{{ (translationService.translation().interpolateable | interpolate: {value: textSignal})() }}</h3>
-  <!-- mind the brackets because interpolate returns a computed  -->
 
+  <!-- inline intepolation of nested object is possible as well but rather questionable -->
+  <h3>{{ (translationService.translation().nest | interpolate: { anotherInterpolatedValue: { num: numSignal } }).anotherInterpolatedValue() }}</h3>
+  <h3>{{ (translationService.translation().nest | interpolate: { anotherInterpolatedValue: { num: numSignal } }).title }}</h3>
+
+  <!-- inline interpolation for parameterized translations  -->
+  <!-- mind the brackets because interpolate returns a computed  -->
+  <h3>{{ (translationService.translation().nest.anotherInterpolatedValue | interpolate: {num: numSignal})() }}</h3>
+  <h3>{{ (translationService.translation().interpolateable | interpolate: {value: textSignal})() }}</h3>
 </main>
 ```
 
 ```ts
 //  app.component.ts
 import { Component, computed, inject, signal } from '@angular/core';
-import { InterpolatePipe, interpolate  } from 'ngx-signal-i18n';
-import { SupportedLanguage } from './translation/i18n-config';
-import { TranslationService } from './translation/translation.service';
+import { interpolate, InterpolatePipe } from 'ngx-signal-i18n';
+import { SupportedLanguage } from '../i18n/i18n-config';
+import { TranslationService } from './services/translation.service';
+import { TranslationTestingService } from './services/translation-testing.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [InterpolatePipe],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss',
 })
 export class AppComponent {
   protected translationService = inject(TranslationService);
@@ -95,7 +99,7 @@ export class AppComponent {
   protected onLanguageChange($event: Event): void {
     // this is not pretty but gets the job done
     const lang = ($event.target as any).value as SupportedLanguage;
-    this.translationService.language$.next(lang);
+    this.translationService.language.set(lang);
   }
 }
 ```
@@ -169,8 +173,9 @@ export default en;
 
 ```ts
 // src/i18n/i18n.config.ts
-import en from './en';
+import { InjectionToken } from '@angular/core';
 import { DefaultLanguageOf, TranslationConfigBase } from 'ngx-signal-i18n';
+import en from './en';
 
 export type SupportedLanguage = 'de' | 'en'
 export type TranslationShape = typeof en;
@@ -182,8 +187,9 @@ export const translationConfig = {
 } as const satisfies TranslationConfigBase<SupportedLanguage, TranslationShape>;
 
 export type TranslationConfig = typeof translationConfig;
-
 export type DefaultLanguage = DefaultLanguageOf<TranslationConfig>;
+
+export const TranslationConfigToken = new InjectionToken<TranslationConfig>("translationConfig", { factory: () => translationConfig })
 ```
 
 ### 3. Add another Translation to the project
@@ -214,26 +220,24 @@ export default de;
 ### 4. Create Translation Service
 
 ```ts
-// src/i18n/translation.service.ts
-import { Injectable } from '@angular/core';
-import { TranslationBaseService } from 'ngx-signal-i18n';
-import { SupportedLanguage, TranslationConfig, TranslationShape, translationConfig } from './i18n-config';
-
+// translation.service.ts
+import { Inject, Injectable } from '@angular/core';
+import { NgxSignalI18nBaseService } from 'ngx-signal-i18n';
+import { SupportedLanguage, TranslationConfig, TranslationConfigToken, TranslationShape } from '../../i18n/i18n-config';
 
 @Injectable({
   providedIn: 'root',
 })
-export class TranslationService extends TranslationBaseService<SupportedLanguage, TranslationShape, TranslationConfig> {
+export class TranslationService extends NgxSignalI18nBaseService<SupportedLanguage, TranslationShape, TranslationConfig> {
 
-  constructor() {
-    super(translationConfig);
+  constructor(@Inject(TranslationConfigToken) config: TranslationConfig) {
+    super(config);
   }
 
   protected override async resolutionStrategy(lang: SupportedLanguage): Promise<TranslationShape> {
     // lazy load translation file
-    return (await import(`./${lang}/index.ts`)).default
+    return (await import(`../../i18n/${lang}/index.ts`)).default
   }
-
 }
 ```
 
@@ -242,18 +246,10 @@ export class TranslationService extends TranslationBaseService<SupportedLanguage
 Add the following line to `tsconfig.app.json` and `tsconfig.spec.json` 
 ```json
 {
-  "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "./out-tsc/app",
-    "types": []
-  },
-  "files": [
-    "src/main.ts",
-  ],
-  "include": [
-    "src/**/*.d.ts",
-    "src/i18n/**/index.ts", /// <-- add this line
-  ]
+    "include": [
+      "src/i18n/**/index.ts", // <-- add this line
+    ]
 }
 ```
 
@@ -263,27 +259,25 @@ When writing tests the current language is mostly not important. This package pr
 Declare `TranslationTestingService`
 ```ts
 // translation-testing.service.ts
-import { Inject, Injectable, Optional } from '@angular/core';
-import { createProxy } from '../../external-translation/testing-util';
-import { SupportedLanguage, TranslationConfig, TranslationShape, translationConfig } from '../i18n-config';
-import { TranslationService } from '../translation.service';
-
+import { Inject, Injectable } from '@angular/core';
+import { createProxy } from 'ngx-signal-i18n';
+import { SupportedLanguage, TranslationConfig, TranslationConfigToken, TranslationShape } from '../../i18n/i18n-config';
+import { TranslationService } from './translation.service';
 
 @Injectable()
 export class TranslationTestingService extends TranslationService {
 
-  constructor() {
+  constructor(@Inject(TranslationConfigToken) config: TranslationConfig) {
     // override the default translation with a proxy that return the access path instead of the value
-    const config = { ...translationConfig, defaultTranslation: createProxy(config.defaultTranslation, "") }
-    super(config)
+    const testingConfig = { ...config, defaultTranslation: createProxy(config.defaultTranslation) };
+    super(testingConfig)
   }
 
-  protected override async resolutionStrategy(lang: SupportedLanguage): Promise<TranslationShape> {
+  protected override async resolutionStrategy(_: SupportedLanguage): Promise<TranslationShape> {
     // don't actually resolve translation because the proxy will return the same value anyway
     return this.config.defaultTranslation
   }
 }
-
 ```
 
 Replace `TranslationService` with `TranslationTestingService` with the angualr DI in tests
@@ -298,9 +292,9 @@ import { TranslationTestingService } from './translation/translation-testing/tra
 describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      // replace TranslationService with TranslationTestingService for tests
       providers: [
-        { provide: TranslationService, useClass: TranslationTestingService }
+        // replace TranslationService with TranslationTestingService for tests
+        { provide: TranslationService, useClass: TranslationTestingService },
       ],
       imports: [AppComponent],
     }).compileComponents();
@@ -311,6 +305,5 @@ describe('AppComponent', () => {
     const app = fixture.componentInstance;
     expect(app).toBeTruthy();
   });
-});
 ```
 ![Translated with TestingService](./assets/pageTranslatedTesting.png)

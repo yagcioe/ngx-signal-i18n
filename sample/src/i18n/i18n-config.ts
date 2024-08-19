@@ -1,6 +1,6 @@
+import { InjectionToken } from '@angular/core';
 import { DefaultLanguageOf, TranslationConfigBase } from 'ngx-signal-i18n';
 import en from './en';
-import { InjectionToken } from '@angular/core';
 
 export type SupportedLanguage = 'de' | 'en'
 export type TranslationShape = typeof en;

@@ -1,8 +1,8 @@
+import { effect, InjectionToken, Injector, provideExperimentalZonelessChangeDetection, runInInjectionContext, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
-import { TranslationService } from './services/translation.service';
 import { TranslationTestingService } from './services/translation-testing.service';
-import { effect, InjectionToken, Injector, provideExperimentalZonelessChangeDetection, runInInjectionContext, signal } from '@angular/core';
+import { TranslationService } from './services/translation.service';
 
 
 describe('AppComponent', () => {

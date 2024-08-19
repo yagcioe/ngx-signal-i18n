@@ -15,5 +15,4 @@ export class TranslationService extends NgxSignalI18nBaseService<SupportedLangua
     // lazy load translation file
     return (await import(`../../i18n/${lang}/index.ts`)).default
   }
-
 }
