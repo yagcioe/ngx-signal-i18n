@@ -14,7 +14,7 @@ This project is inspired by [typesafe-i18n](https://github.com/ivanhofer/typesaf
 - Template Interpolation Pipe: Provides a pipe for easy interpolation of translations in your templates.
 - Masking Utility: Provides utility types for omitting and picking specific translations which comes in handy when dealing with parameterized translations.
 - Testing Proxy: Includes a proxy utility to simplify mocking translations during testing.
-- Lightweight Build (~2kB)
+- Lightweight Build: < 1kb
 
 
 ## Installation
