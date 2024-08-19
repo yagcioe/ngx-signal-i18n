@@ -1,0 +1,37 @@
+<main>
+  <select (change)="onLanguageChange($event)">
+    <option value="en">en</option>
+    <option value="de">de</option>
+  </select>
+  <hr /> <br />
+
+  <h2>simple access for non interpolated values</h2>
+  <h3>{{ translationService.translation().title}}</h3>
+  <h3>{{ translationService.translation().simpleNest.str}}</h3>
+  <h3>{{ translationService.translation().nest.title}}</h3>
+  <hr /> <br />
+
+  <h2>interpolated values from the ts file</h2>
+  <h3>{{ interpolatedTranslations().title }}</h3>
+  <h3>{{ interpolatedTranslations().simpleNest.str }}</h3>
+  <h3>{{ interpolatedTranslations().nest.title }}</h3>
+  <h3>{{ interpolatedTranslations().nest.anotherInterpolatedValue()}}</h3>
+  <h3>{{ interpolatedTranslations().interpolateable()}}</h3>
+  <hr /> <br />
+
+  <h2>inline interpolation with the interpolation pipe</h2>
+  <!-- inline interpolation for strings is unessesary but possible -->
+  <h3>{{ translationService.translation().title | interpolate: undefined }}</h3>
+  <h3>{{ translationService.translation().simpleNest.str | interpolate: undefined}}</h3>
+  <h3>{{ translationService.translation().nest.title | interpolate: undefined}}</h3>
+
+  <!-- inline intepolation of nested object is possible as well but rather questionable -->
+  <h3>{{ (translationService.translation().nest | interpolate: { anotherInterpolatedValue: { num: numSignal } }).anotherInterpolatedValue() }}</h3>
+  <h3>{{ (translationService.translation().nest | interpolate: { anotherInterpolatedValue: { num: numSignal } }).title }}</h3>
+
+  <!-- inline interpolation for parameterized translations  -->
+  <!-- mind the brackets because interpolate returns a computed  -->
+  <h3>{{ (translationService.translation().nest.anotherInterpolatedValue | interpolate: {num: numSignal})() }}</h3>
+  <h3>{{ (translationService.translation().interpolateable | interpolate: {value: textSignal})() }}</h3>
+
+</main>
