@@ -1,6 +1,19 @@
 {
   "name": "ngx-signal-i18n",
   "version": "0.0.1",
+  "author": "yagcioe",
+  "repository": "https://github.com/yagcioe/ngx-signal-i18n",
+  "license":"MIT",
+  "markdown": "github",
+  "description": "Signal based translation for angular",
+  "keywords": [
+    "translation",
+    "translate",
+    "i18n",
+    "angular",
+    "signal",
+    "signals"
+  ],
   "peerDependencies": {
     "@angular/core": "^18.2.0"
   },
