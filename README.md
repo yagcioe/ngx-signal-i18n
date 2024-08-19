@@ -1,6 +1,6 @@
-# ng-singal-i18n
+# ng-signal-i18n
 
-This package provides a typesafe and lazy-loaded i18n solution for Angular applications, built on top of signals for improved reactivity. It is compatible with zoneless Angular.
+This package provides a typesafe and lazy-loaded internationalization (i18n) solution for Angular applications, built on top of signals for improved reactivity. It is compatible with zoneless Angular.
 
 This project is inspired by [typesafe-i18n](https://github.com/ivanhofer/typesafe-i18n)
 
@@ -108,7 +108,8 @@ export class AppComponent {
 ![Translated de](./assets/pageTranslatedDe.png)
 
 ## Deep Pick and Omit Utility
-Sometimes a translation shape requires more parameters than you have at hand. Providing parameters for translations that are actually not needed is tedious. Instead of providing placeholder values this library provides a `pick` and `omit` function that returns deeply nested values according a boolean mask.
+Sometimes translation structures require more parameters than you have available. Providing unnecessary parameters can be cumbersome. To simplify this process, this library offers `pick` and `omit` functions that extract specific values from complex objects using a boolean mask.
+
 ```ts
 import { Mask, omit, pick } from 'ngx-signal-i18n';
 
@@ -254,7 +255,7 @@ Add the following line to `tsconfig.app.json` and `tsconfig.spec.json`
 ```
 
 ## Writing Tests
-When writing tests the current language is mostly not important. This package provides a utility function that wraps a Translation object in a proxy that returns the access path instead of a value
+When writing tests, the specific language often doesn't matter. This package provides a utility function that creates a proxy of a Translation object. Instead of returning actual translation values, the proxy returns the path to the desired translation
 
 Declare `TranslationTestingService`
 ```ts
@@ -280,7 +281,7 @@ export class TranslationTestingService extends TranslationService {
 }
 ```
 
-Replace `TranslationService` with `TranslationTestingService` with the angualr DI in tests
+Replace `TranslationService` with `TranslationTestingService` with the Angular DI in tests
 
 ```ts 
 // app.component.spec.ts
