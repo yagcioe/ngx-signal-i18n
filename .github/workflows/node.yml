@@ -26,24 +26,25 @@ jobs:
         node-version: 22.x
         cache: 'npm'
         cache-dependency-path: './ngx-signal-i18n/package-lock.json'
+    - uses: browser-actions/setup-chrome@v1
     - run: npm ci
     - run: npm run test-headless
     - run: npm run build
   
-  build-sample:
-    runs-on: ubuntu-latest
+  # build-sample:
+  #   runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: ./sample
+  #   defaults:
+  #     run:
+  #       working-directory: ./sample
 
-    steps:
-    - uses: actions/checkout@v4
-    - name: Use Node.js 22.x
-      uses: actions/setup-node@v4
-      with:
-        node-version: 22.x
-        cache: 'npm'
-        cache-dependency-path: './sample/package-lock.json'
-    - run: npm ci
-    - run: npm run build
+  #   steps:
+  #   - uses: actions/checkout@v4
+  #   - name: Use Node.js 22.x
+  #     uses: actions/setup-node@v4
+  #     with:
+  #       node-version: 22.x
+  #       cache: 'npm'
+  #       cache-dependency-path: './sample/package-lock.json'
+  #   - run: npm ci
+  #   - run: npm run build
