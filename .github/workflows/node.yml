@@ -25,6 +25,7 @@ jobs:
       with:
         node-version: 22.x
         cache: 'npm'
+        cache-dependency-path: './ngx-signal-i18n/package-lock.json'
     - run: npm ci
     - run: npm run test-headless
     - run: npm run build
@@ -43,5 +44,6 @@ jobs:
       with:
         node-version: 22.x
         cache: 'npm'
+        cache-dependency-path: './sample/package-lock.json'
     - run: npm ci
     - run: npm run build
