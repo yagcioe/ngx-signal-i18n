@@ -27,7 +27,7 @@ jobs:
         cache: 'npm'
         cache-dependency-path: './ngx-signal-i18n/package-lock.json'
     - uses: browser-actions/setup-chrome@v1
-    - run: npm ci
+    - run: npm i
     - run: npm run test-headless
     - run: npm run build
   
