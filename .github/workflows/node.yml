@@ -14,12 +14,15 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: ./ngx-signal-i18n
+
     steps:
     - uses: actions/checkout@v4
     - name: Use Node.js 22.x
       uses: actions/setup-node@v4
       with:
-        working-directory: ngx-signal-i18n
         node-version: 22.x
         cache: 'npm'
     - run: npm ci
@@ -29,12 +32,15 @@ jobs:
   build-sample:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: ./sample
+
     steps:
     - uses: actions/checkout@v4
     - name: Use Node.js 22.x
       uses: actions/setup-node@v4
       with:
-        working-directory: sample
         node-version: 22.x
         cache: 'npm'
     - run: npm ci
