@@ -1,8 +1,16 @@
-import {type  Mask, type objectlike, type OmitDeepResult, type PickDeepResult } from "./object-util.types";
+import { type Mask, type objectlike, type OmitDeepResult, type PickDeepResult } from "./object-util.types";
 
 
-function isObjectLike(value: unknown): value is objectlike {
+function isIndexable(value: unknown): value is objectlike {
     return !!value && typeof value === "object";
+}
+
+function isArray(value: unknown): value is Array<unknown> {
+    return value instanceof Array;
+}
+
+function isKeyOf<TValue extends objectlike>(obj: TValue, key: string | number | symbol): key is keyof TValue {
+    return (key in obj);
 }
 
 /**
@@ -11,16 +19,20 @@ function isObjectLike(value: unknown): value is objectlike {
  * @param mask nested boolean mask of the provided object
  * @returns Object with the values picked declared by the mask
  */
-export function pick<TValue, TOptions extends Mask<TValue>>(obj: TValue, mask: TOptions): PickDeepResult<TValue, TOptions> {
-    if (mask === false) return undefined as PickDeepResult<TValue, TOptions>;
-    if (mask === true) return obj as PickDeepResult<TValue, TOptions>;
+export function pick<TValue extends objectlike | undefined, TMask extends Mask<TValue>>(obj: TValue, mask: TMask): PickDeepResult<TValue, TMask> {
+    if (mask === false) return undefined as PickDeepResult<TValue, TMask>;
+    if (mask === true) return obj as PickDeepResult<TValue, TMask>;
 
-    if (isObjectLike(mask) && isObjectLike(obj)) {
-        const result = {} as any
-        for (const key of Object.keys(mask) as (keyof typeof obj & keyof typeof mask & keyof typeof result & string)[]) {
-            const currentOption = mask[key];
-            const currentObj = obj[key];
-            if (isObjectLike(currentOption)) {
+    if (isIndexable(mask) && isIndexable(obj)) {
+        const result = isArray(obj) ? [] : {} as any
+        for (const key in mask) {
+            const typedKey = key as keyof typeof mask & keyof typeof result;
+            if (!isKeyOf(obj, typedKey)) continue;
+
+            const currentOption = mask[typedKey];
+            const currentObj = (obj as any)[typedKey];
+
+            if (isIndexable(currentOption) && isIndexable(currentObj)) {
                 result[key] = pick(currentObj, currentOption as Mask<typeof currentObj>);
             }
             else if (currentOption === true) {
@@ -39,24 +51,27 @@ export function pick<TValue, TOptions extends Mask<TValue>>(obj: TValue, mask: T
  * @param mask nested boolean mask of the provided object
  * @returns Object with the values omited declared by the mask
  */
-export function omit<TValue, TOptions extends Mask<TValue>>(obj: TValue, mask: TOptions): OmitDeepResult<TValue, TOptions> {
-    if (mask === true) return undefined as OmitDeepResult<TValue, TOptions>;
-    if (mask === false) return obj as OmitDeepResult<TValue, TOptions>;
+export function omit<TValue extends objectlike, TMask extends Mask<TValue>>(obj: TValue, mask: TMask): OmitDeepResult<TValue, TMask> {
+    if (mask === true) return undefined as OmitDeepResult<TValue, TMask>;
+    if (mask === false) return obj as OmitDeepResult<TValue, TMask>;
 
-    if (isObjectLike(mask) && isObjectLike(obj)) {
-        const result = {} as any
-        for (const key of Object.keys(obj) as (keyof typeof obj & keyof typeof result & string)[]) {
-            if (mask[key] === true) continue;
-
-            const currentOption = mask[key];
-            const currentObj = obj[key];
-            if (!currentOption) {
-                result[key] = currentObj
+    if (isIndexable(mask) && isIndexable(obj)) {
+        const result = isArray(obj) ? [] : {} as any
+        for (const key in obj) {
+            const typedKey = key as (keyof typeof obj & keyof typeof result);
+            if (!isKeyOf(mask, typedKey) || !mask[typedKey]) {
+                if (isKeyOf(obj, typedKey)) {
+                    result[typedKey] = (obj as any)[typedKey];
+                }
+                continue;
             }
-            else {
-                result[key] = omit(currentObj, currentOption as Mask<typeof currentObj>);
-            }
+            if (mask[typedKey] === true) continue;
 
+            const currentObj = (obj as any)[typedKey];
+            const currentMask = mask[typedKey]
+            if (isIndexable(currentObj) && isIndexable(currentMask)) {
+                result[key] = omit(currentObj, currentMask);
+            }
         }
         return result;
     }

@@ -19,7 +19,7 @@ This project is inspired by [typesafe-i18n](https://github.com/ivanhofer/typesaf
 
 ## Installation
 ```Bash
-npm i ng-signal-i18n
+npm i ngx-signal-i18n
 ```
 
 ## Usage

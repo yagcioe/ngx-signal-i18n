@@ -8,35 +8,33 @@ export interface TranslationConfigBase<
   readonly defaultTranslation?: TTranslationShape;
 
   /** provide default language to initally set the default language and automatically load it on startup.
-   * {@link NgxSignalI18nBaseService.language$} will have an inital value.
-   */
+  * {@link NgxSignalI18nBaseService.language$} will have an inital value.
+  */
   readonly defaultLanguage?: TSupportedLanguage;
 
   /** Use cache to prevent calling the resolution strategy when a language has already been loaded. This reduces the amount of change detections
-   * When {@link defaultTranslation} and {@link defaultLanguage} is set then those will be put into the cache aswell
-   */
-  readonly useCache?: boolean
+  * When {@link defaultTranslation} and {@link defaultLanguage} is set then those will be put into the cache aswell
+  */
+  readonly useCache?: boolean;
 }
+export type TranslationConfigWithDefaultTranslation<TTranslationShape extends TranslationShapeBase> =
+  Required<Pick<TranslationConfigBase<any, TTranslationShape>, "defaultTranslation">>
 
-export interface TranslationConfigWithDefaultTranslation<TTranslationShape extends TranslationShapeBase> {
-  readonly defaultTranslation: TTranslationShape;
-}
+export type TranslationConfigWithDefaultLanguage<TSupportedLanguage extends SupportedLanguageBase> =
+  Required<Pick<TranslationConfigBase<TSupportedLanguage, any>, "defaultLanguage">>
 
-export interface TranslationConfigWithDefaultLanguage<TSupportedLanguage extends SupportedLanguageBase> {
-  readonly defaultLanguage: TSupportedLanguage;
-}
+export type TranslationConfigWithCache =
+  Required<Pick<TranslationConfigBase<any, any>, "useCache">>
 
 export type TranslationShapeOf<
   TTranslationShape extends TranslationShapeBase,
   TTranslationConfig extends TranslationConfigBase<SupportedLanguageBase, TranslationShapeBase>
-> =
-  TTranslationConfig extends TranslationConfigWithDefaultTranslation<TTranslationShape> ? TTranslationShape : TTranslationShape | undefined;
+> = TTranslationConfig extends TranslationConfigWithDefaultTranslation<TTranslationShape> ? TTranslationShape : TTranslationShape | undefined;
 
 export type SupportedLanguagesOf<
   TSupportedLanguage extends SupportedLanguageBase,
   TTranslationConfig extends TranslationConfigBase<SupportedLanguageBase, TranslationShapeBase>
-> =
-  TTranslationConfig extends TranslationConfigWithDefaultLanguage<TSupportedLanguage> ? TSupportedLanguage : TSupportedLanguage | undefined;
+> = TTranslationConfig extends TranslationConfigWithDefaultLanguage<TSupportedLanguage> ? TSupportedLanguage : TSupportedLanguage | undefined;
 
 export type DefaultLanguageOf<
   TTranslationConfig extends TranslationConfigBase<SupportedLanguageBase, TranslationShapeBase>

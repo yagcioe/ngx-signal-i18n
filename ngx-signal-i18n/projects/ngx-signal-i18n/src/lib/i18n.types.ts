@@ -1,6 +1,5 @@
 import { type Signal } from '@angular/core';
 
-
 export type TranslationFunctionParamsBase = Record<string, Signal<any>>
 
 export type TranslationFunction<TParams extends TranslationFunctionParamsBase> = (params: TParams) => Signal<string>;
