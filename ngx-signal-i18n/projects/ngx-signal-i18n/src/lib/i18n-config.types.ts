@@ -5,17 +5,17 @@ export interface TranslationConfigBase<
   TTranslationShape extends TranslationShapeBase
 > {
   /** provide default Translation to remove the possible undefined type in {@link NgxSignalI18nBaseService.translation}*/
-  readonly defaultTranslation?: TTranslationShape;
+  defaultTranslation?: TTranslationShape;
 
   /** provide default language to initally set the default language and automatically load it on startup.
   * {@link NgxSignalI18nBaseService.language$} will have an inital value.
   */
-  readonly defaultLanguage?: TSupportedLanguage;
+  defaultLanguage?: TSupportedLanguage;
 
   /** Use cache to prevent calling the resolution strategy when a language has already been loaded. This reduces the amount of change detections
   * When {@link defaultTranslation} and {@link defaultLanguage} is set then those will be put into the cache aswell
   */
-  readonly useCache?: boolean;
+  useCache?: boolean;
 }
 export type TranslationConfigWithDefaultTranslation<TTranslationShape extends TranslationShapeBase> =
   Required<Pick<TranslationConfigBase<any, TTranslationShape>, "defaultTranslation">>

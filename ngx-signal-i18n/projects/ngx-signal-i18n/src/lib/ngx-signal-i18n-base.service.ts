@@ -8,12 +8,15 @@ export abstract class NgxSignalI18nBaseService<TSupportedLanguage extends Suppor
    */
   private cache: Partial<Record<TSupportedLanguage, TTranslationShape>> = {}
 
+  #language;
+  #translation;
+
+
   /**
    * Signal that holds the current Language
    */
-  public language: WritableSignal<SupportedLanguagesOf<TSupportedLanguage, TTranslationConfig>>;
+  public language: Signal<SupportedLanguagesOf<TSupportedLanguage, TTranslationConfig>>;
 
-  #translation;
 
   /**
    * {@link Signal} that holds the current Translation
@@ -25,10 +28,12 @@ export abstract class NgxSignalI18nBaseService<TSupportedLanguage extends Suppor
    * @param config specific instance of {@link TranslationConfigBase translation config}
    */
   constructor(protected readonly config: TTranslationConfig) {
+    if(!config) throw Error("config was not provided")
     if (config.defaultLanguage) {
       this.cache[config.defaultLanguage] = config.defaultTranslation as TTranslationShape | undefined;
     }
-    this.language = signal<SupportedLanguagesOf<TSupportedLanguage, TTranslationConfig>>(config.defaultLanguage as SupportedLanguagesOf<TSupportedLanguage, TTranslationConfig>);
+    this.#language = signal<SupportedLanguagesOf<TSupportedLanguage, TTranslationConfig>>(config.defaultLanguage as SupportedLanguagesOf<TSupportedLanguage, TTranslationConfig>);
+    this.language = this.#language.asReadonly();
     this.#translation = signal<TranslationShapeOf<TTranslationShape, TTranslationConfig>>(config.defaultTranslation as TranslationShapeOf<TTranslationShape, TTranslationConfig>)
     this.translation = this.#translation.asReadonly();
 
@@ -57,4 +62,8 @@ export abstract class NgxSignalI18nBaseService<TSupportedLanguage extends Suppor
    * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import import() }
    */
   protected abstract resolutionStrategy(lang: TSupportedLanguage): Promise<TTranslationShape>;
+
+  public setLanguage(lang: TSupportedLanguage): void {
+    this.#language.set(lang);
+  }
 }

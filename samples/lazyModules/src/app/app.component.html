@@ -5,6 +5,11 @@
   </select>
   <hr /> <br />
 
+  <button (click)="routeToLazy()">Lazy</button>
+  <button (click)="routehome()">Home</button>
+
+  <router-outlet></router-outlet>
+
   <h2>simple access for non interpolated values</h2>
   <h3>{{ translationService.translation().title}}</h3>
   <h3>{{ translationService.translation().simpleNest.str}}</h3>
@@ -26,8 +31,10 @@
   <h3>{{ translationService.translation().nest.title | interpolate: undefined}}</h3>
 
   <!-- inline intepolation of nested object is possible as well but rather questionable -->
-  <h3>{{ (translationService.translation().nest | interpolate: { anotherInterpolatedValue: { num: numSignal } }).anotherInterpolatedValue() }}</h3>
-  <h3>{{ (translationService.translation().nest | interpolate: { anotherInterpolatedValue: { num: numSignal } }).title }}</h3>
+  <h3>{{ (translationService.translation().nest | interpolate: { anotherInterpolatedValue: { num: numSignal }
+    }).anotherInterpolatedValue() }}</h3>
+  <h3>{{ (translationService.translation().nest | interpolate: { anotherInterpolatedValue: { num: numSignal } }).title
+    }}</h3>
 
   <!-- inline interpolation for parameterized translations  -->
   <!-- mind the brackets because interpolate returns a computed  -->

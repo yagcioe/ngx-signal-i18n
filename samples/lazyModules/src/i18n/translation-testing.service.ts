@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@angular/core';
 import { createProxy } from 'ngx-signal-i18n';
-import { SupportedLanguage, TranslationConfig, TranslationConfigToken, TranslationShape } from '../../i18n/i18n-config';
+import { SupportedLanguage, TranslationConfig, TranslationConfigToken, TranslationShape } from './i18n-config';
 import { TranslationService } from './translation.service';
 
 @Injectable()

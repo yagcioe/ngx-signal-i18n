@@ -1,8 +1,8 @@
 import { effect, InjectionToken, Injector, provideExperimentalZonelessChangeDetection, runInInjectionContext, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { TranslationTestingService } from '../i18n/translation-testing.service';
+import { TranslationService } from '../i18n/translation.service';
 import { AppComponent } from './app.component';
-import { TranslationTestingService } from './services/translation-testing.service';
-import { TranslationService } from './services/translation.service';
 
 
 describe('AppComponent', () => {
@@ -63,7 +63,7 @@ describe('AppComponent', () => {
       })
     });
     //
-    translationService.language.set("de")
+    translationService.setLanguage("de")
   })
 
 });
