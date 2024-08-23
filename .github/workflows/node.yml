@@ -24,9 +24,7 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: 22.x
-        cache: 'npm'
-        cache-dependency-path: './ngx-signal-i18n/package-lock.json'
-    - uses: browser-actions/setup-chrome@v1
+    - run: pwd
     - run: npm i
     - run: npm run test-headless
     - run: npm run build
