@@ -1,7 +1,8 @@
 import { computed } from "@angular/core";
 import { type TranslationFunctionParamsBase, type TranslationShapeBase } from "./i18n.types";
 
-function createProxyInner<TTranslationShape extends TranslationShapeBase>(target: TTranslationShape, currentKeyPath: string): TTranslationShape {
+function createProxyInner<TTranslationShape extends TranslationShapeBase>(target: TTranslationShape | undefined, currentKeyPath: string): TTranslationShape | undefined {
+    if (target === undefined) return undefined
     return new Proxy(target, {
         get: <TKey extends keyof TTranslationShape & string & symbol>(target: TTranslationShape, key: TKey): TTranslationShape[TKey] => {
 
@@ -44,6 +45,10 @@ function createProxyInner<TTranslationShape extends TranslationShapeBase>(target
  * @param target object to proxy
  * @returns Proxy of {@link target}
  */
-export function createProxy<TTranslationShape extends TranslationShapeBase>(target: TTranslationShape) {
+
+export function createProxy<TTranslationShape extends TranslationShapeBase>(target: undefined): undefined;
+export function createProxy<TTranslationShape extends TranslationShapeBase>(target: TTranslationShape): TTranslationShape;
+export function createProxy<TTranslationShape extends TranslationShapeBase>(target: TTranslationShape | undefined): TTranslationShape | undefined
+export function createProxy<TTranslationShape extends TranslationShapeBase>(target: TTranslationShape | undefined): TTranslationShape | undefined {
     return createProxyInner(target, "")
 }

@@ -172,6 +172,8 @@ export default en;
 ```
 ### 2. Define Translation config
 
+>In order to prevent a lot of syntax boilerplate to deal with undefined, having a default language and default translation is highly recommended!
+
 ```ts
 // src/i18n/i18n.config.ts
 import { InjectionToken } from '@angular/core';

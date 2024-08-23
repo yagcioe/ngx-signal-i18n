@@ -1,11 +1,11 @@
 import { type TranslationFunction, type TranslationShapeBase, type TranslationValue } from "./i18n.types";
 import { type InterpolatedTranslation, type InterpolationOptions } from "./interpolater.types";
 
-export function interpolate<TTanslation extends TranslationValue>(
-    interpolationObject: TTanslation,
-    params: InterpolationOptions<TTanslation>
-): InterpolatedTranslation<TTanslation> {
-    if (interpolationObject === undefined) return undefined as InterpolatedTranslation<TTanslation>;
+export function interpolate<TTanslation extends TranslationValue>(interpolationObject: undefined | null, params: InterpolationOptions<TTanslation>): undefined;
+export function interpolate<TTanslation extends TranslationValue>(interpolationObject: TTanslation, params: InterpolationOptions<TTanslation>): InterpolatedTranslation<TTanslation>;
+export function interpolate<TTanslation extends TranslationValue>(interpolationObject: TTanslation | null | undefined, params: InterpolationOptions<TTanslation>): InterpolatedTranslation<TTanslation> | undefined;
+export function interpolate<TTanslation extends TranslationValue>(interpolationObject: TTanslation | null | undefined, params: InterpolationOptions<TTanslation>): InterpolatedTranslation<TTanslation> | undefined {
+    if (interpolationObject == undefined) return undefined;
 
     if (typeof interpolationObject === 'string') {
         return interpolateLiteral(interpolationObject);

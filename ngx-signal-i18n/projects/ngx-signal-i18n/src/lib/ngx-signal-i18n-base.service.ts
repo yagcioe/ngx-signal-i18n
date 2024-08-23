@@ -1,4 +1,4 @@
-import { effect, signal, Signal, WritableSignal } from "@angular/core";
+import { effect, signal, Signal } from "@angular/core";
 import { SupportedLanguagesOf, TranslationConfigBase, TranslationShapeOf } from "./i18n-config.types";
 import { SupportedLanguageBase, TranslationShapeBase } from "./i18n.types";
 
@@ -63,7 +63,7 @@ export abstract class NgxSignalI18nBaseService<TSupportedLanguage extends Suppor
    */
   protected abstract resolutionStrategy(lang: TSupportedLanguage): Promise<TTranslationShape>;
 
-  public setLanguage(lang: TSupportedLanguage): void {
+  public setLanguage(lang: SupportedLanguagesOf<TSupportedLanguage, TTranslationConfig>): void {
     this.#language.set(lang);
   }
 }
