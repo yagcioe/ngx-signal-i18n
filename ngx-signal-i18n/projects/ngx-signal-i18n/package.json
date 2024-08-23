@@ -15,7 +15,8 @@
     "signal",
     "signals",
     "ngx",
-    "ng"
+    "ng",
+    "zoneless"
   ],
   "peerDependencies": {
     "@angular/core": "^18.2.0"
