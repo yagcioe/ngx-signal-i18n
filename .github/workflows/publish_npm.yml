@@ -23,7 +23,7 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: ngx-signal-i18n
+          name: ${{needs.build.outputs.artifact_name}}
           path: ./
       - run: ls -r
   

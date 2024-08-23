@@ -12,4 +12,7 @@ jobs:
   test:
     needs: build
     uses: ./.github/workflows/test_samples.yml
+    with: 
+      artifact_name: ${{needs.build.outputs.artifact_name}}
+
 

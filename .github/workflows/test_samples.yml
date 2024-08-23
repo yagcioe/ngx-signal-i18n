@@ -1,7 +1,11 @@
-name: Build
+name: Test Samples
 
 on:
   workflow_call:
+    inputs:
+      artifact_name:
+        required: true
+        type: string
 
 jobs:
   test:
@@ -17,7 +21,7 @@ jobs:
         - name: Get Artifact
           uses: actions/download-artifact@v4
           with:
-            name: ngx-signal-i18n
+            name: ${{ inputs.artifact_name }}
             path: ./ngx-signal-i18n/dist/ngx-signal-i18n
 
         - name: Test Sample Simple

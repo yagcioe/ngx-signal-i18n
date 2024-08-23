@@ -2,11 +2,19 @@ name: Build
 
 on:
   workflow_call:
+    outputs:
+      artifact_name:
+        description: "The name of the published artifact"
+        value: ${{ jobs.build-package.outputs.artifact_name }}
+        
+env:
+  artifact_name: ngx-signal-i18n
 
 jobs:
     build-package:
         runs-on: ubuntu-latest
-    
+        outputs:
+          artifact_name: ${{ env.artifact_name }}
         steps:
         - uses: actions/checkout@v4
         - name: Use Node.js 22.x
@@ -24,9 +32,8 @@ jobs:
             npm i
             npm run build
             npm run test-ci
-        
         - uses: actions/upload-artifact@v4
           with:
-            name: ngx-signal-i18n
+            name: ${{env.artifact_name}}
             path: ngx-signal-i18n/dist/ngx-signal-i18n
             if-no-files-found: error
