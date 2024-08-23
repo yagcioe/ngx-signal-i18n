@@ -20,7 +20,10 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: 22.x
-        
+
+    - name: copy README
+      run: cp ./README.md ./ngx-signal-i18n/projects/ngx-signal-i18n
+
     - name: Build and Test Package
       working-directory: ./ngx-signal-i18n
       run: |
@@ -35,3 +38,9 @@ jobs:
         rm package-lock.json
         npm i
         npm run test-ci
+    
+    - uses: actions/upload-artifact@v4
+      with:
+        name: ngx-signal-i18n
+        path: ngx-signal-i18n/dist/ngx-signal-i18n
+        if-no-files-found: error
