@@ -14,7 +14,7 @@ jobs:
     - uses: tj-actions/branch-names@v8
       id: branch-names
       
-    - uses: ./.github/workflows/version.yml
+    - uses: ./.github/workflows/ver.yml
       id: version
       with:
         version: ${{steps.branch-names.outputs.current_branch}}
