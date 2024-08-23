@@ -6,7 +6,7 @@ on:
 jobs:
   validate-version:
     outputs:
-      version: ${{steps.version.outputs.version}}
+      version: ${{steps.split-version.outputs._1}}
     runs-on: ubuntu-latest
     steps:
 
@@ -14,10 +14,31 @@ jobs:
     - uses: tj-actions/branch-names@v8
       id: branch-names
       
-    - uses: ./.github/workflows/ver.yml
-      id: version
+    - run: echo "${{ steps.branch-names.outputs.current_branch }}"
+    - name: assert release branch
+      if: startsWith(steps.branch-names.outputs.current_branch, 'release/') != true
+      run : exit 1
+
+    - name: get version number
+      id: split-version
+      uses: xom9ikk/split@v1
       with:
-        version: ${{steps.branch-names.outputs.current_branch}}
+        string: ${{steps.branch-names.outputs.current_branch}}
+        separator: /
+        limit: 2
+    
+    - run: echo "${{ steps.split-version.outputs._1 }}"
+    
+    - uses: actions-ecosystem/action-regex-match@v2
+      id: regex-match
+      with:
+        text: ${{ steps.split-version.outputs._1 }}
+        regex: '^\d*\.\d*\.\d*$'
+        flags: gm
+    
+    - name: assert valid version
+      if: steps.regex-match.outputs.match == ''
+      run: exit 1
         
 
   build:
