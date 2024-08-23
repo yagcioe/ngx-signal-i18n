@@ -1,4 +1,4 @@
-# ng-signal-i18n
+# ngx-signal-i18n
 ![CI](https://github.com/yagcioe/ngx-signal-i18n/actions/workflows/node_ci.yml/badge.svg)
 
 This package provides a typesafe and lazy-loaded internationalization (i18n) solution for Angular applications, built on top of signals for improved reactivity. It is compatible with zoneless Angular.
@@ -45,7 +45,7 @@ npm i ngx-signal-i18n
   <h3>{{ interpolatedTranslations().simpleNest.str }}</h3>
   <h3>{{ interpolatedTranslations().nest.title }}</h3>
   <h3>{{ interpolatedTranslations().nest.anotherInterpolatedValue()}}</h3>
-  <h3>{{ interpolatedTranslations().interpolateable()}}</h3>
+  <h3>{{ interpolatedTranslations().interpolatable()}}</h3>
   <hr /> <br />
 
   <h2>inline interpolation with the interpolation pipe</h2>
@@ -55,13 +55,15 @@ npm i ngx-signal-i18n
   <h3>{{ translationService.translation().nest.title | interpolate: undefined}}</h3>
 
   <!-- inline intepolation of nested object is possible as well but rather questionable -->
-  <h3>{{ (translationService.translation().nest | interpolate: { anotherInterpolatedValue: { num: numSignal } }).anotherInterpolatedValue() }}</h3>
-  <h3>{{ (translationService.translation().nest | interpolate: { anotherInterpolatedValue: { num: numSignal } }).title }}</h3>
+  <h3>{{ (translationService.translation().nest
+    | interpolate: { anotherInterpolatedValue: { num: numSignal } }).anotherInterpolatedValue() }}</h3>
+  <h3>{{ (translationService.translation().nest | interpolate: { anotherInterpolatedValue: { num: numSignal } }).title
+    }}</h3>
 
   <!-- inline interpolation for parameterized translations  -->
-  <!-- mind the brackets because interpolate returns a computed  -->
+  <!-- mind the brackets because | interpolate returns a computed  -->
   <h3>{{ (translationService.translation().nest.anotherInterpolatedValue | interpolate: {num: numSignal})() }}</h3>
-  <h3>{{ (translationService.translation().interpolateable | interpolate: {value: textSignal})() }}</h3>
+  <h3>{{ (translationService.translation().interpolatable | interpolate: {text: textSignal})() }}</h3>
 </main>
 ```
 
@@ -70,8 +72,7 @@ npm i ngx-signal-i18n
 import { Component, computed, inject, signal } from '@angular/core';
 import { interpolate, InterpolatePipe } from 'ngx-signal-i18n';
 import { SupportedLanguage } from '../i18n/i18n-config';
-import { TranslationService } from './services/translation.service';
-import { TranslationTestingService } from './services/translation-testing.service';
+import { TranslationService } from '../i18n/translation.service';
 
 @Component({
   selector: 'app-root',
@@ -85,22 +86,16 @@ export class AppComponent {
   protected textSignal = signal('text');
   protected numSignal = signal(0);
 
-
   protected interpolatedTranslations = computed(() => {
-    const translationRoot = this.translationService.translation()
-    // typesafe interpolarization of parameterized text only
-    return interpolate(translationRoot, {
-      interpolateable: { value: this.textSignal },
-      nest: {
-        anotherInterpolatedValue: { num: this.numSignal }
-      }
-    });
-  });
+    return interpolate(this.translationService.translation(), {
+      interpolatable: { text: this.textSignal },
+      nest: { anotherInterpolatedValue: { num: this.numSignal } }
+    })
+  })
 
   protected onLanguageChange($event: Event): void {
-    // this is not pretty but gets the job done
     const lang = ($event.target as any).value as SupportedLanguage;
-    this.translationService.language.set(lang);
+    this.translationService.setLanguage(lang);
   }
 }
 ```

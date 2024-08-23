@@ -3,8 +3,8 @@ import { TranslationShapeBase } from 'ngx-signal-i18n';
 
 const en = {
   title: 'title',
-  interpolateable: (params: { value: Signal<string> }) =>
-    computed(() => `this is a interpolated value: ${params.value()}`),
+  interpolatable: (params: { text: Signal<string> }) =>
+    computed(() => `this is a interpolated value: ${params.text()}`),
   nest: {
     title: 'nested title',
     anotherInterpolatedValue: (params: { num: Signal<number> }) =>

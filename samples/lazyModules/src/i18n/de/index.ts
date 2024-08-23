@@ -3,8 +3,8 @@ import { TranslationShape } from '../i18n-config';
 
 const de: TranslationShape = {
   title: 'Titel',
-  interpolateable: (params: { value: Signal<string> }) =>
-    computed(() => `Das ist ein intepolierter Wert: ${params.value()}`),
+  interpolatable: (params: { text: Signal<string> }) =>
+    computed(() => `Das ist ein intepolierter Wert: ${params.text()}`),
   nest: {
     title: 'geschachtelter Titel',
     anotherInterpolatedValue: (params: { num: Signal<number> }) =>

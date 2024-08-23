@@ -1,6 +1,6 @@
-import { NgModule } from '@angular/core';
+import { NgModule, Signal } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { TranslationService } from '../../i18n/translation.service';
+import { SupportedLanguage } from '../../i18n/i18n-config';
 import { LazyTranslationConfig, LazyTranslationConfigToken } from './i18n/i18n.config';
 import { LazyTranslationService } from './i18n/lazy-translation.service';
 import { LazyComponent } from './lazy.component';
@@ -12,6 +12,9 @@ const routes: Routes = [
   }
 ];
 
+/** this config will be lazy loaded when the module is initalized.
+ * @see AppConfig
+ *  */
 let lazyTranslationConfig: LazyTranslationConfig;
 
 @NgModule({
@@ -24,16 +27,19 @@ let lazyTranslationConfig: LazyTranslationConfig;
   ]
 })
 export class LazyModule {
+
   //workaround to load translation when module is loaded
-  public static async initTranslationConfig() {
-    const lang = TranslationService.globalLanguage;
+  public static async initTranslationConfig(langSig: Signal<SupportedLanguage>): Promise<void> {
+
+    if (lazyTranslationConfig) return;
+    const lang = langSig();
     const m = await import(`./i18n/${lang}/index.ts`);
     lazyTranslationConfig = {
       defaultLanguage: lang,
       defaultTranslation: m.default,
       useCache: true
     }
-    return LazyModule
+
   };
 }
 
