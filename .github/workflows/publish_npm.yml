@@ -2,6 +2,7 @@ name: Publish NPM
 
 on:
   workflow_dispatch:
+    
     inputs:
       version:
         required: true
