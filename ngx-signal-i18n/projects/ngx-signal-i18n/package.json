@@ -6,7 +6,6 @@
   "license": "MIT",
   "markdown": "github",
   "description": "Signal based translation for angular",
-  "private": "true",
   "keywords": [
     "translation",
     "translate",
