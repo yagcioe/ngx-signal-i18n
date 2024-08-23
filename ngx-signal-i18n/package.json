@@ -7,7 +7,6 @@
     "test": "ng test ngx-signal-i18n",
     "test-ci": "ng test --browsers ChromeHeadless --watch=false"
   },
-  "private": true,
   "dependencies": {
     "@angular/core": "^18.2.0",
     "rxjs": "~7.8.0",

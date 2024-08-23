@@ -60,13 +60,6 @@ jobs:
           name: ${{needs.build.outputs.artifact_name}}
           path: ./
       - run: ls -r
-  
-      - name: Make public
-        uses: jossef/action-set-json-field@v2.1
-        with:
-          file: package.json
-          field: private
-          value: "false"
 
       - name: Set Version
         uses: jossef/action-set-json-field@v2.1
