@@ -1,7 +1,10 @@
 name: Test Version
 
 on:
-  workflow_dispatch: 
+  workflow_dispatch:
+    
+env:
+  branch_name: "release/1.2.3"
 
 jobs:
   test:
@@ -13,14 +16,14 @@ jobs:
 
     - run: echo "${{ steps.branch-names.outputs.current_branch }}"
     - name: assert release branch
-      if: startsWith(steps.branch-names.outputs.current_branch, 'release/') != true
+      if: startsWith(env.branch_name, 'release/') != true
       run : exit 1
 
     - name: get version number
       id: split-version
       uses: xom9ikk/split@v1
       with:
-        string: ${{steps.branch-names.outputs.current_branch}}
+        string: ${{env.branch_name}}
         separator: /
         limit: 2
     
