@@ -1,0 +1,17 @@
+name: Publish NPM
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch-name:
+        required: true
+        type: string
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: ./github/workflows/version.yml
+      with:
+        branch-name: ${{inputs.branch-name}}
+

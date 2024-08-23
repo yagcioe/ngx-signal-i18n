@@ -1,0 +1,47 @@
+name: Validate Version
+
+on:
+  workflow_call:
+    inputs:
+      branch-name:
+        required: true
+        type: string
+        description: branch name to be validated
+    outputs:
+      version:
+        description: Valid version of current branch
+        value: ${{ jobs.validate-version.outputs.version}}
+    
+
+jobs:
+  validate-version:
+    outputs:
+      version: ${{steps.split-version.outputs.result}}
+      
+    runs-on: ubuntu-latest
+    steps:
+    - run: echo ${{ inputs.branch-name }}
+    - name: assert release branch
+      if: startsWith(inputs.branch-name, 'release/') != true
+      run : exit 1
+
+    - name: get version number
+      id: split-version
+      uses: xom9ikk/split@v1
+      with:
+        string: ${{inputs.branch-name}}
+        separator: /
+        limit: 2
+    
+    - run: echo ${{ steps.version.outputs.result }}
+    
+    - uses: actions-ecosystem/action-regex-match@v2
+      id: regex-match
+      with:
+        text: ${{ steps.version.outputs.result }}
+        regex: '^\d*\.\d*\.\d*$'
+        flags: gm
+    
+    - name: assert valid version
+      if: steps.regex-match.outputs.match == ''
+      run: exit 1

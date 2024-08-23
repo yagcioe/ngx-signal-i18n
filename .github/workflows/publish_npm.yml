@@ -6,34 +6,17 @@ on:
 jobs:
   validate-version:
     outputs:
-      version: ${{steps.version.outputs._1}}
+      version: ${{steps.version.outputs.version}}
     runs-on: ubuntu-latest
     steps:
     - uses: tj-actions/branch-names@v8
       id: branch-names
       
-    - name: assert release branch
-      if: startsWith(steps.branch-names.outputs.current_branch, 'release/') != true
-      run : exit 1
-
-    - name: get version number
+    - uses: ./.github/workflows/version.yml
       id: version
-      uses: xom9ikk/split@v1
       with:
-        string: ${{steps.branch-names.outcome.current_branch}}
-        separator: /
-        limit: 2
-    
-    - uses: actions-ecosystem/action-regex-match@v2
-      id: regex-match
-      with:
-        text: ${{ steps.version.outputs._1 }}
-        regex: '^\d*\.\d*\.\d*$'
-        flags: gm
-    
-    - name: assert valid version
-      if: steps.regex-match.outputs.match == ''
-      run: exit 1
+        version: ${{steps.branch-names.outputs.current_branch}}
+        
 
   build:
     needs: validate-version
