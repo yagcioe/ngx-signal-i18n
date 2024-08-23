@@ -27,8 +27,8 @@ jobs:
     - run: pwd
     - run: rm package-lock.json
     - run: npm i
-    - run: npm run test-headless
     - run: npm run build
+    - run: npm run test-headless
   
   # build-sample:
   #   runs-on: ubuntu-latest
