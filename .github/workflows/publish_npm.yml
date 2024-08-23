@@ -13,7 +13,7 @@ jobs:
       id: branch-names
       
     - name: assert release branch
-      if: startsWith(steps.branch-names.outputs.current_branch, '/release') != true
+      if: startsWith(steps.branch-names.outputs.current_branch, 'release/') != true
       run : exit 1
 
     - name: get version number
