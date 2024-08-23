@@ -66,7 +66,7 @@ jobs:
         with:
           file: package.json
           field: private
-          value: false
+          value: "false"
 
       - name: Set Version
         uses: jossef/action-set-json-field@v2.1
