@@ -13,7 +13,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - uses: ./github/workflows/version.yml
+    - uses: ./.github/workflows/version.yml
       with:
         branch-name: ${{inputs.branch-name}}
 
