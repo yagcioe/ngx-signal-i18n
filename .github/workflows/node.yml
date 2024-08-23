@@ -14,21 +14,23 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: ./ngx-signal-i18n
-
     steps:
     - uses: actions/checkout@v4
     - name: Use Node.js 22.x
       uses: actions/setup-node@v4
       with:
         node-version: 22.x
-    - run: pwd
+        
+    - run: pushd ./ngx-signal-i18n & pwd
     - run: rm package-lock.json
     - run: npm i
     - run: npm run build
     - run: npm run test-ci
+
+    - run: popd & pushd ./samples/simple & pwd
+    - run: npm i
+    - run: npm run test-ci
+
   
   # build-sample:
   #   runs-on: ubuntu-latest
