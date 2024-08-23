@@ -13,7 +13,7 @@ jobs:
 
     - run: echo "${{ steps.branch-names.outputs.current_branch }}"
     - name: assert release branch
-      if: startsWith(inputs.branch-name, 'release/') != true
+      if: startsWith(steps.branch-names.outputs.current_branch, 'release/') != true
       run : exit 1
 
     - name: get version number
