@@ -11,7 +11,7 @@ jobs:
     - uses: tj-actions/branch-names@v8
       id: branch-names
 
-    - run: echo "${{ inputs.branch-name }}"
+    - run: echo "${{ steps.branch-names.outputs.current_branch }}"
     - name: assert release branch
       if: startsWith(inputs.branch-name, 'release/') != true
       run : exit 1
@@ -20,16 +20,16 @@ jobs:
       id: split-version
       uses: xom9ikk/split@v1
       with:
-        string: ${{inputs.branch-name}}
+        string: ${{steps.branch-names.outputs.current_branch}}
         separator: /
         limit: 2
     
-    - run: echo "${{ steps.version.outputs.result }}"
+    - run: echo "${{ steps.split-version.outputs._1 }}"
     
     - uses: actions-ecosystem/action-regex-match@v2
       id: regex-match
       with:
-        text: ${{ steps.version.outputs.result }}
+        text: ${{ steps.split-version.outputs._1 }}
         regex: '^\d*\.\d*\.\d*$'
         flags: gm
     
