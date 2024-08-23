@@ -5,7 +5,7 @@
     "build": "ng build ngx-signal-i18n",
     "build-watch": "ng build ngx-signal-i18n --watch",
     "test": "ng test ngx-signal-i18n",
-    "test-headless": "ng test --browsers ChromeHeadlessCustom"
+    "test-headless": "ng test --browsers ChromeHeadless"
   },
   "private": true,
   "dependencies": {
