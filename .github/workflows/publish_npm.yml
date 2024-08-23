@@ -2,11 +2,6 @@ name: Publish NPM
 
 on:
   workflow_dispatch:
-    
-    inputs:
-      version:
-        required: true
-        type: string
 
 jobs:
   build:
@@ -16,6 +11,31 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - uses: tj-actions/branch-names@v8
+        id: branch-names
+      
+      - name: assert release branch
+        if: startsWith(steps.branch-names.outputs.current_branch, '/release') != false
+        run : exit 1
+
+      - name: get version number
+        id: version
+        uses: xom9ikk/split@v1
+        with:
+          string: ${{steps.branch-names.outcome.current_branch}}
+          separator: /
+          limit: 2
+      
+      - uses: actions-ecosystem/action-regex-match@v2
+        id: regex-match
+        with:
+          text: ${{ steps.version.outputs._1 }}
+          regex: '^\d*\.\d*\.\d*$'
+          flags: gm
+      
+      - name: assert valid version
+        if: steps.regex-match.outputs.match == ''
+        run: exit 1
 
       - name: Use Node.js 22.x
         uses: actions/setup-node@v4
@@ -40,7 +60,7 @@ jobs:
         with:
           file: package.json
           field: version
-          value: "${{ inputs.version }}"
+          value: "${{ steps.version.outputs._1 }}"
 
       - name: Publish to NPM    
         run: npm publish --provenance --access public

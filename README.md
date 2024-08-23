@@ -1,4 +1,5 @@
 # ng-signal-i18n
+![CI](https://github.com/yagcioe/ngx-signal-i18n/actions/workflows/node_ci.yml/badge.svg)
 
 This package provides a typesafe and lazy-loaded internationalization (i18n) solution for Angular applications, built on top of signals for improved reactivity. It is compatible with zoneless Angular.
 
