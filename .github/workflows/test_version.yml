@@ -1,0 +1,41 @@
+name: Test Version
+
+on:
+  workflow_dispatch:
+    
+env:
+  branch_name: "release/1.2.3"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: tj-actions/branch-names@v8
+      id: branch-names
+
+    - run: echo "${{ steps.branch-names.outputs.current_branch }}"
+    - name: assert release branch
+      if: startsWith(env.branch_name, 'release/') != true
+      run : exit 1
+
+    - name: get version number
+      id: split-version
+      uses: xom9ikk/split@v1
+      with:
+        string: ${{env.branch_name}}
+        separator: /
+        limit: 2
+    
+    - run: echo "${{ steps.split-version.outputs._1 }}"
+    
+    - uses: actions-ecosystem/action-regex-match@v2
+      id: regex-match
+      with:
+        text: ${{ steps.split-version.outputs._1 }}
+        regex: '^\d*\.\d*\.\d*$'
+        flags: gm
+    
+    - name: assert valid version
+      if: steps.regex-match.outputs.match == ''
+      run: exit 1
