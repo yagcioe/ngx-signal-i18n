@@ -25,6 +25,7 @@ jobs:
       with:
         node-version: 22.x
     - run: pwd
+    - run: rm package-lock.json
     - run: npm i
     - run: npm run test-headless
     - run: npm run build
