@@ -1,0 +1,46 @@
+name: Publish NPM
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+    
+  publish_npm:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Use Node.js 22.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: ngx-signal-i18n
+          path: ./
+      - run: ls -r
+  
+      - name: Make public
+        uses: jossef/action-set-json-field@v2.1
+        with:
+          file: package.json
+          field: private
+          value: false
+
+      - name: Set Version
+        uses: jossef/action-set-json-field@v2.1
+        with:
+          file: package.json
+          field: version
+          value: "${{ inputs.version }}"
+
+      - name: Publish to NPM    
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

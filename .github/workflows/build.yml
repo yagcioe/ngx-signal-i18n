@@ -1,0 +1,32 @@
+name: Build
+
+on:
+  workflow_call:
+
+jobs:
+    build-package:
+        runs-on: ubuntu-latest
+    
+        steps:
+        - uses: actions/checkout@v4
+        - name: Use Node.js 22.x
+          uses: actions/setup-node@v4
+          with:
+            node-version: 22.x
+    
+        - name: copy README
+          run: cp ./README.md ./ngx-signal-i18n/projects/ngx-signal-i18n
+    
+        - name: Build and Test Package
+          working-directory: ./ngx-signal-i18n
+          run: |
+            rm package-lock.json
+            npm i
+            npm run build
+            npm run test-ci
+        
+        - uses: actions/upload-artifact@v4
+          with:
+            name: ngx-signal-i18n
+            path: ngx-signal-i18n/dist/ngx-signal-i18n
+            if-no-files-found: error

@@ -13,7 +13,9 @@
     "i18n",
     "angular",
     "signal",
-    "signals"
+    "signals",
+    "ngx",
+    "ng"
   ],
   "peerDependencies": {
     "@angular/core": "^18.2.0"

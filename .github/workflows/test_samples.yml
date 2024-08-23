@@ -1,0 +1,35 @@
+name: Build
+
+on:
+  workflow_call:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+        - uses: actions/checkout@v4
+        - name: Use Node.js 22.x
+          uses: actions/setup-node@v4
+          with:
+            node-version: 22.x
+
+        - name: Get Artifact
+          uses: actions/download-artifact@v4
+          with:
+            name: ngx-signal-i18n
+            path: ./ngx-signal-i18n/dist/ngx-signal-i18n
+
+        - name: Test Sample Simple
+          working-directory: ./samples/simple
+          run: |
+            rm package-lock.json
+            npm i
+            npm run test-ci
+        
+        - name: Test Sample LazyModule
+          working-directory: ./samples/lazyModules
+          run: |
+            rm package-lock.json
+            npm i
+            npm run test-ci
