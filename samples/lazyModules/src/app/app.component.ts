@@ -23,7 +23,7 @@ export class AppComponent {
     const translationRoot = this.translationService.translation()
     // typesafe interpolarization of parameterized text only
     return interpolate(translationRoot, {
-      interpolateable: { value: this.textSignal },
+      interpolatable: { text: this.textSignal },
       nest: {
         anotherInterpolatedValue: { num: this.numSignal }
       }
