@@ -3,20 +3,31 @@
 
 This package provides a typesafe and lazy-loaded internationalization (i18n) solution for Angular applications, built on top of signals for improved reactivity. It is compatible with zoneless Angular.
 
+![smaple.gif](./assets/sample.gif)
+
 This project is inspired by [typesafe-i18n](https://github.com/ivanhofer/typesafe-i18n)
 
 ## Features
-- Typesafety: Enforces type safety for translations depending on a default language.
-- Lazy Loading: Translations are loaded on demand, improving initial bundle size.
-- Signal Based: Leverages signals for efficient reactivity and change detection.
-- Zoneless Angular Compatibility: Works seamlessly with zoneless Angular applications.
-- Parameterized Translations: Supports translations with parameters for dynamic content.
-- Interpolation Functions: Offers interpolation functions for formatting parameterized translations.
-- Template Interpolation Pipe: Provides a pipe for easy interpolation of translations in your templates.
-- Masking Utility: Provides utility types for omitting and picking specific translations which comes in handy when dealing with parameterized translations.
-- Testing Proxy: Includes a proxy utility to simplify mocking translations during testing.
-- Lightweight Build: < 1kb
+⛑️ Typesafety: Enforces type safety for translations depending on a default language.\
+🦥 Lazy Loading: Translations are loaded on demand, improving initial bundle size.\
+🚦 Signal Based: Leverages signals for efficient reactivity and change detection.\
+🏃‍♂️ Zoneless Angular Compatibility: Works seamlessly with zoneless Angular applications.\
+📄 Parameterized Translations: Supports translations with parameters for dynamic content.\
+🛠️ Template Interpolation Pipe: Provides a pipe for easy interpolation of translations in your templates.\
+🎭 Masking Utility: Provides utility types for omitting and picking specific translations which comes in handy when dealing with parameterized translations.\
+🦺 Testing Proxy: Includes a proxy utility to simplify mocking translations during testing.\
+🐤 Lightweight Build: ~ 1kb\
+📦 Minimal Dependencies\
+⛔ No Magic: Just Typescript
 
+
+## Table of Content
+- [Installation](#installation)
+- [Usage](#usage)
+- [Deep Pick and Omit Utility](#deep-pick-and-omit-utility)
+- [Configuration](#configuration)
+- [Writing Tests](#writing-tests)
+- [Examples](#sample-projects)
 
 ## Installation
 ```Bash
@@ -24,7 +35,6 @@ npm i ngx-signal-i18n
 ```
 
 ## Usage
-
 ```html
 <!-- app.component.html -->
 <main>
@@ -152,8 +162,8 @@ import { TranslationShapeBase } from 'ngx-signal-i18n';
 
 const en = {
   title: 'title',
-  interpolateable: (params: { value: Signal<string> }) =>
-    computed(() => `this is a interpolated value: ${params.value()}`),
+  interpolatable: (params: { text: Signal<string> }) =>
+    computed(() => `this is a interpolated value: ${params.text()}`),
   nest: {
     title: 'nested title',
     anotherInterpolatedValue: (params: { num: Signal<number> }) =>
@@ -161,7 +171,7 @@ const en = {
   },
   simpleNest: {
     str: 'F',
-  },
+  }
 } satisfies TranslationShapeBase;
 
 export default en;
@@ -190,19 +200,18 @@ export type DefaultLanguage = DefaultLanguageOf<TranslationConfig>;
 
 export const TranslationConfigToken = new InjectionToken<TranslationConfig>("translationConfig", { factory: () => translationConfig })
 ```
-
 ### 3. Add another Translation to the project
 Add another translation that has the type of the main translation
 
 ```ts
 // src/i18n/de/index.ts
 import { computed, Signal } from '@angular/core';
-import { TranslationShape } from '../../app/translation/i18n-config';
+import { TranslationShape } from '../i18n-config';
 
 const de: TranslationShape = {
   title: 'Titel',
-  interpolateable: (params: { value: Signal<string> }) =>
-    computed(() => `Das ist ein intepolierter Wert: ${params.value()}`),
+  interpolatable: (params: { text: Signal<string> }) =>
+    computed(() => `Das ist ein intepolierter Wert: ${params.text()}`),
   nest: {
     title: 'geschachtelter Titel',
     anotherInterpolatedValue: (params: { num: Signal<number> }) =>
@@ -210,19 +219,20 @@ const de: TranslationShape = {
   },
   simpleNest: {
     str: 'F',
-  },
+  }
 };
 
 export default de;
 ```
-
 ### 4. Create Translation Service
 
 ```ts
-// translation.service.ts
+// src/i18n/translation.service.ts
 import { Inject, Injectable } from '@angular/core';
 import { NgxSignalI18nBaseService } from 'ngx-signal-i18n';
-import { SupportedLanguage, TranslationConfig, TranslationConfigToken, TranslationShape } from '../../i18n/i18n-config';
+import { SupportedLanguage, TranslationConfig, TranslationConfigToken, TranslationShape } from './i18n-config';
+
+export let globalLanguage: SupportedLanguage;
 
 @Injectable({
   providedIn: 'root',
@@ -235,13 +245,11 @@ export class TranslationService extends NgxSignalI18nBaseService<SupportedLangua
 
   protected override async resolutionStrategy(lang: SupportedLanguage): Promise<TranslationShape> {
     // lazy load translation file
-    return (await import(`../../i18n/${lang}/index.ts`)).default
+    return (await import(`./${lang}/index.ts`)).default
   }
 }
 ```
-
 ### 5. Include Translation files in tsconfig
-
 Add the following line to `tsconfig.app.json` and `tsconfig.spec.json` 
 ```json
 {
@@ -257,10 +265,10 @@ When writing tests, the specific language often doesn't matter. This package pro
 
 Declare `TranslationTestingService`
 ```ts
-// translation-testing.service.ts
+// src/i18n/translation-testing.service.ts
 import { Inject, Injectable } from '@angular/core';
 import { createProxy } from 'ngx-signal-i18n';
-import { SupportedLanguage, TranslationConfig, TranslationConfigToken, TranslationShape } from '../../i18n/i18n-config';
+import { SupportedLanguage, TranslationConfig, TranslationConfigToken, TranslationShape } from './i18n-config';
 import { TranslationService } from './translation.service';
 
 @Injectable()
@@ -306,3 +314,9 @@ describe('AppComponent', () => {
   });
 ```
 ![Translated with TestingService](./assets/pageTranslatedTesting.png)
+
+## Examples
+See sample projects on [GitHub](https://github.com/yagcioe/ngx-signal-i18n)
+- [Simple Example](https://github.com/yagcioe/ngx-signal-i18n/tree/main/samples/simple)
+- [Lazy Loaded Module and Translations](https://github.com/yagcioe/ngx-signal-i18n/tree/main/samples/lazyModules)
+- [StackBlitz](https://stackblitz.com/edit/stackblitz-starters-w7jtm3?file=src%2Fmain.ts)

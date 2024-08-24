@@ -10,17 +10,11 @@ export let globalLanguage: SupportedLanguage;
 export class TranslationService extends NgxSignalI18nBaseService<SupportedLanguage, TranslationShape, TranslationConfig> {
 
   constructor(@Inject(TranslationConfigToken) config: TranslationConfig) {
-    globalLanguage = config.defaultLanguage
     super(config);
   }
 
   protected override async resolutionStrategy(lang: SupportedLanguage): Promise<TranslationShape> {
     // lazy load translation file
     return (await import(`./${lang}/index.ts`)).default
-  }
-
-  override setLanguage(lang: SupportedLanguage): void {
-    globalLanguage = lang;
-    super.setLanguage(lang);
   }
 }

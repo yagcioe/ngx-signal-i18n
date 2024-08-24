@@ -12,7 +12,7 @@ const en = {
   },
   simpleNest: {
     str: 'F',
-  },
+  }
 } satisfies TranslationShapeBase;
 
 export default en;
