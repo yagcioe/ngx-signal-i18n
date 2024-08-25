@@ -27,7 +27,7 @@ This project is inspired by [typesafe-i18n](https://github.com/ivanhofer/typesaf
 - [Deep Pick and Omit Utility](#deep-pick-and-omit-utility)
 - [Configuration](#configuration)
 - [Writing Tests](#writing-tests)
-- [Examples](#sample-projects)
+- [Examples](#examples)
 
 ## Installation
 ```Bash

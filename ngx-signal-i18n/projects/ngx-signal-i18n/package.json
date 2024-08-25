@@ -10,12 +10,16 @@
     "translation",
     "translate",
     "i18n",
+    "intl",
+    "l10n",
     "angular",
     "signal",
     "signals",
     "ngx",
     "ng",
-    "zoneless"
+    "zoneless",
+    "typesafe",
+    "typescript"
   ],
   "peerDependencies": {
     "@angular/core": "^18.2.0"
