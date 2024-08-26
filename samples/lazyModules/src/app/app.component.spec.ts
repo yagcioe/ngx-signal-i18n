@@ -1,8 +1,12 @@
 import { effect, InjectionToken, Injector, provideExperimentalZonelessChangeDetection, runInInjectionContext, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { AppComponent } from './app.component';
-import { TranslationService } from '../i18n/translation.service';
+import { provideDefaultLocale } from 'ngx-signal-i18n';
+import en from '../i18n/en';
+import { DEFAULT_TRANSLATION, Locale } from '../i18n/i18n-config';
 import { TranslationTestingService } from '../i18n/translation-testing.service';
+import { TranslationService } from '../i18n/translation.service';
+import { AppComponent } from './app.component';
+
 
 
 
@@ -14,7 +18,9 @@ describe('AppComponent', () => {
         // this app is zoneless
         provideExperimentalZonelessChangeDetection(),
         // replace TranslationService with TranslationTestingService for tests
+        provideDefaultLocale<Locale>("en"),
         { provide: TranslationService, useClass: TranslationTestingService },
+        { provide: DEFAULT_TRANSLATION, useValue: en },
         { provide: RealTranslationServiceToken, useClass: TranslationService }
       ],
       imports: [AppComponent],
@@ -64,7 +70,7 @@ describe('AppComponent', () => {
       })
     });
     //
-    translationService.setLanguage("de")
+    translationService.setLocale("de")
   })
 
 });

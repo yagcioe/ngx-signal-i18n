@@ -1,6 +1,6 @@
-import { LazyTranslationShape } from "../i18n.config"
+import { LazyTranslation } from "../i18n.config"
 
-const lazyde: LazyTranslationShape = {
+const lazyde: LazyTranslation = {
     lazyTitle: "fauler Title"
 }
 

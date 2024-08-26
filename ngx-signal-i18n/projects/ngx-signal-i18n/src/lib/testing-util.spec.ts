@@ -1,4 +1,3 @@
-import { NextObserver } from "rxjs";
 
 export type Expect<TExpected extends boolean> = TExpected
 

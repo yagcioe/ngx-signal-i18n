@@ -1,7 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { interpolate, InterpolatePipe } from 'ngx-signal-i18n';
-import { SupportedLanguage } from '../i18n/i18n-config';
 import { Router, RouterModule } from '@angular/router';
+import { interpolate, InterpolatePipe } from 'ngx-signal-i18n';
+import { Locale } from '../i18n/i18n-config';
 import { TranslationService } from '../i18n/translation.service';
 
 @Component({
@@ -31,8 +31,8 @@ export class AppComponent {
   });
 
   protected onLanguageChange($event: Event): void {
-    const lang = ($event.target as any).value as SupportedLanguage;
-    this.translationService.setLanguage(lang);
+    const lang = ($event.target as any).value as Locale;
+    this.translationService.setLocale(lang);
   }
 
   protected routeToLazy(): void {

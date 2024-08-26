@@ -1,7 +1,7 @@
-import { TranslationShapeBase } from "ngx-signal-i18n"
+import { TranslationShape } from "ngx-signal-i18n"
 
 const lazyEn = {
     lazyTitle: "lazy Title"
-} satisfies TranslationShapeBase
+} satisfies TranslationShape
 
 export default lazyEn

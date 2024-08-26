@@ -1,4 +1,4 @@
-import { type TranslationFunction, type TranslationShapeBase, type TranslationValue } from "./i18n.types";
+import { type TranslationFunction, type TranslationShape, type TranslationValue } from "./i18n.types";
 import { type InterpolatedTranslation, type InterpolationOptions } from "./interpolater.types";
 
 export function interpolate<TTanslation extends TranslationValue>(interpolationObject: TTanslation, params: TTanslation extends TranslationValue ? InterpolationOptions<TTanslation> : any): InterpolatedTranslation<TTanslation> {
@@ -16,7 +16,7 @@ export function interpolate<TTanslation extends TranslationValue>(interpolationO
     throw Error('Value was not a TranslationValue');
 }
 
-function interpolateObject<TTanslation extends TranslationShapeBase>(
+function interpolateObject<TTanslation extends TranslationShape>(
     translationObject: TTanslation,
     params: InterpolationOptions<TTanslation>
 ): InterpolatedTranslation<TTanslation> {

@@ -1,5 +1,5 @@
 import { computed, Signal } from '@angular/core';
-import { TranslationShapeBase } from 'ngx-signal-i18n';
+import { TranslationShape} from 'ngx-signal-i18n';
 
 const en = {
   title: 'title',
@@ -13,6 +13,6 @@ const en = {
   simpleNest: {
     str: 'F',
   }
-} satisfies TranslationShapeBase;
+} satisfies TranslationShape;
 
 export default en;

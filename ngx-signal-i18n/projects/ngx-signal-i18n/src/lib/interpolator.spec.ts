@@ -1,5 +1,5 @@
 import { computed, signal, Signal } from "@angular/core";
-import { interpolate, InterpolatedTranslation, InterpolationOptions, TranslationShapeBase } from "ngx-signal-i18n";
+import { interpolate, InterpolatedTranslation, InterpolationOptions, TranslationShape } from "ngx-signal-i18n";
 import { Equal, Expect, Extends } from "./testing-util.spec";
 
 describe("interpolator", () => {
@@ -29,7 +29,7 @@ describe("interpolator", () => {
             simpleNest: {
                 str: 'F',
             },
-        } satisfies TranslationShapeBase;
+        } satisfies TranslationShape;
 
         const options = {
             interpolateable: {
@@ -61,7 +61,7 @@ describe("interpolator", () => {
     it("should translate simple shape", () => {
         const shape = {
             title: 'Titel',
-        } satisfies TranslationShapeBase;
+        } satisfies TranslationShape;
 
         const o: InterpolationOptions<typeof shape> = {}
 
@@ -81,7 +81,7 @@ describe("interpolator", () => {
                 anotherInterpolatedValue: () =>
                     computed(() => `Das ist ein geschachtelter interpolierter Wert`),
             },
-        } satisfies TranslationShapeBase;
+        } satisfies TranslationShape;
 
         const options = {
             interpolateable: {},
@@ -106,7 +106,7 @@ describe("interpolator", () => {
             nest: {
                 t: ""
             },
-        } satisfies TranslationShapeBase;
+        } satisfies TranslationShape;
 
         const options = {
             interpolateable: {},
@@ -141,14 +141,14 @@ describe("interpolator", () => {
                 a: "qw"
             },
 
-        } satisfies TranslationShapeBase;
+        } satisfies TranslationShape;
 
         const interpolatebleShape = {
             title: 'Titel',
             interpolateable: (params: { value: Signal<string> }) =>
                 computed(() => `Das ist ein intepolierter Wert: ${params.value()}`),
 
-        } satisfies TranslationShapeBase;
+        } satisfies TranslationShape;
 
         const expectedSimpleResult = simpleShape;
         const expectedInterpolatableResult = {

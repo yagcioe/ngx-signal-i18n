@@ -1,59 +1,59 @@
-import { effect, signal, Signal } from "@angular/core";
-import { SupportedLanguagesOf, TranslationConfigBase, TranslationShapeOf } from "./i18n-config.types";
-import { SupportedLanguageBase, TranslationShapeBase } from "./i18n.types";
+import { effect, inject, signal, Signal } from "@angular/core";
+import { LocaleBase, TranslationShape } from "./i18n.types";
+import { LocaleProvider } from "./locale-provider";
 
-export abstract class NgxSignalI18nBaseService<TSupportedLanguage extends SupportedLanguageBase, TTranslationShape extends TranslationShapeBase, TTranslationConfig extends TranslationConfigBase<TSupportedLanguage, TTranslationShape>> {
+export abstract class NgxSignalI18nBaseService<TLocale extends LocaleBase, TTranslation extends TranslationShape> {
   /**
    * Object that contiains languages as keys and translations as values
    */
-  private cache: Partial<Record<TSupportedLanguage, TTranslationShape>> = {}
+  private cache: Partial<Record<TLocale, TTranslation>> = {}
 
-  #language;
+  private readonly localeProvider: LocaleProvider<TLocale> = inject(LocaleProvider<TLocale>)
+
   #translation;
-
-
-  /**
-   * Signal that holds the current Language
-   */
-  public language: Signal<SupportedLanguagesOf<TSupportedLanguage, TTranslationConfig>>;
-
 
   /**
    * {@link Signal} that holds the current Translation
    */
-  public translation: Signal<TranslationShapeOf<TTranslationShape, TTranslationConfig>>;
+  public translation: Signal<TTranslation>;
 
-  /**
-   * 
-   * @param config specific instance of {@link TranslationConfigBase translation config}
-   */
-  constructor(protected readonly config: TTranslationConfig) {
-    if(!config) throw Error("config was not provided")
-    if (config.defaultLanguage) {
-      this.cache[config.defaultLanguage] = config.defaultTranslation as TTranslationShape | undefined;
+  constructor(defaultTranslation: TTranslation, private useCache = true) {
+    if (this.localeProvider.locale()) {
+      this.cache[this.localeProvider.locale()] = defaultTranslation as TTranslation;
     }
-    this.#language = signal<SupportedLanguagesOf<TSupportedLanguage, TTranslationConfig>>(config.defaultLanguage as SupportedLanguagesOf<TSupportedLanguage, TTranslationConfig>);
-    this.language = this.#language.asReadonly();
-    this.#translation = signal<TranslationShapeOf<TTranslationShape, TTranslationConfig>>(config.defaultTranslation as TranslationShapeOf<TTranslationShape, TTranslationConfig>)
+
+    this.#translation = signal<TTranslation>(defaultTranslation)
     this.translation = this.#translation.asReadonly();
 
     effect(() => {
-      const lang = this.language();
-      if (!lang) {
-        this.#translation.set(undefined as TranslationShapeOf<TTranslationShape, TTranslationConfig>)
+      const locale = this.localeProvider.locale();
+      if (!locale) {
+        this.setTranslation(undefined as any)
         return;
       }
 
-      if (this.config.useCache && this.cache[lang]) {
-        this.#translation.set(this.cache[lang])
-        return;
+      if (this.useCache) {
+        const cachedValue = this.getCache(locale);
+        if (!!cachedValue) {
+          this.#translation.set(cachedValue)
+          return;
+        }
       }
 
-      this.resolutionStrategy(lang).then((translations) => {
-        this.cache[lang] = translations;
-        this.#translation.set(translations)
-      })
+      this.loadTranslation(locale)
     }, { allowSignalWrites: true })
+  }
+
+  /**
+   * updates the locale of the injected locale provider
+   * @param locale locale to be set
+   */
+  public setLocale(locale: TLocale) {
+    this.localeProvider.setLocale(locale)
+  }
+
+  protected loadTranslation(locale: TLocale): Promise<void> {
+    return this.resolutionStrategy(locale).then((translations) => this.onLocaleResolution(locale, translations))
   }
 
   /**
@@ -61,9 +61,52 @@ export abstract class NgxSignalI18nBaseService<TSupportedLanguage extends Suppor
    * @param lang Language that should be loaded
    * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import import() }
    */
-  protected abstract resolutionStrategy(lang: TSupportedLanguage): Promise<TTranslationShape>;
+  protected abstract resolutionStrategy(lang: TLocale): Promise<TTranslation>;
 
-  public setLanguage(lang: SupportedLanguagesOf<TSupportedLanguage, TTranslationConfig>): void {
-    this.#language.set(lang);
+  /**
+   * updates the translation sigal with the provided value
+   * @param translationShape value to be set
+   */
+  protected setTranslation(translationShape: TTranslation) {
+    this.#translation.set(translationShape)
+  }
+
+  /**
+   * sets the value into the cache if enabled
+   * @param locale locale to set the value for
+   * @param translationShape value to be set
+   */
+  protected setCache(locale: TLocale, translationShape: TTranslation) {
+    if (this.useCache) {
+      this.cache[locale] = translationShape
+    }
+  }
+
+  /**
+   * function that defines the behaviour when a locale has been loaded
+   * per default the cache and the translation signal will will be updated
+   * 
+   * @param locale locale that has been loaded
+   * @param translationShape translation that has been loaded
+   */
+  protected onLocaleResolution(locale: TLocale, translationShape: TTranslation) {
+    this.setCache(locale, translationShape)
+    this.setTranslation(translationShape)
+  }
+
+  /**
+   * 
+   * @param locale locale to look up
+   * @returns cached value for provided locale
+   */
+  protected getCache(locale: TLocale): TTranslation | undefined {
+    return this.cache[locale]
+  }
+
+  /**
+   * clears the cache
+   */
+  protected clearCache() {
+    this.cache = {}
   }
 }

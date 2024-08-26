@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { TranslationTestingService } from '../i18n/translation-testing.service';
 import { TranslationService } from '../i18n/translation.service';
 import { AppComponent } from './app.component';
+import { provideDefaultLocale } from 'ngx-signal-i18n';
 
 
 describe('AppComponent', () => {
@@ -13,6 +14,7 @@ describe('AppComponent', () => {
         // this app is zoneless
         provideExperimentalZonelessChangeDetection(),
         // replace TranslationService with TranslationTestingService for tests
+        provideDefaultLocale("en"),
         { provide: TranslationService, useClass: TranslationTestingService },
         { provide: RealTranslationServiceToken, useClass: TranslationService }
       ],
@@ -63,7 +65,7 @@ describe('AppComponent', () => {
       })
     });
     //
-    translationService.setLanguage("de")
+    translationService.setLocale("de")
   })
 
 });

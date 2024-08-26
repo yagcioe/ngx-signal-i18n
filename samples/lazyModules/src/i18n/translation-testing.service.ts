@@ -1,19 +1,23 @@
-import { Inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { createProxy } from 'ngx-signal-i18n';
-import { SupportedLanguage, TranslationConfig, TranslationConfigToken, TranslationShape } from './i18n-config';
+import en from './en';
+import { Locale, Translation } from './i18n-config';
 import { TranslationService } from './translation.service';
 
 @Injectable()
 export class TranslationTestingService extends TranslationService {
 
-  constructor(@Inject(TranslationConfigToken) config: TranslationConfig) {
+  private translationMock: Translation
+
+  constructor() {
     // override the default translation with a proxy that return the access path instead of the value
-    const testingConfig = { ...config, defaultTranslation: createProxy(config.defaultTranslation) };
-    super(testingConfig)
+    const translation = createProxy(en)
+    super(translation)
+    this.translationMock = translation
   }
 
-  protected override async resolutionStrategy(_: SupportedLanguage): Promise<TranslationShape> {
+  protected override async resolutionStrategy(_: Locale): Promise<Translation> {
     // don't actually resolve translation because the proxy will return the same value anyway
-    return this.config.defaultTranslation
+    return this.translationMock
   }
 }

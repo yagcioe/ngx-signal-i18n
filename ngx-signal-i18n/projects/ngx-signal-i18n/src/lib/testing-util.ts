@@ -1,7 +1,7 @@
 import { computed } from "@angular/core";
-import { type TranslationFunctionParamsBase, type TranslationShapeBase } from "./i18n.types";
+import { type TranslationFunctionParams, type TranslationShape } from "./i18n.types";
 
-function createProxyInner<TTranslationShape extends TranslationShapeBase>(target: TTranslationShape | undefined, currentKeyPath: string): TTranslationShape | undefined {
+function createProxyInner<TTranslationShape extends TranslationShape>(target: TTranslationShape | undefined, currentKeyPath: string): TTranslationShape | undefined {
     if (target === undefined) return undefined
     return new Proxy(target, {
         get: <TKey extends keyof TTranslationShape & string & symbol>(target: TTranslationShape, key: TKey): TTranslationShape[TKey] => {
@@ -9,13 +9,13 @@ function createProxyInner<TTranslationShape extends TranslationShapeBase>(target
             const targetValue = target[key];
             if (typeof targetValue === "string") return currentKeyPath + key as TTranslationShape[TKey];
             if (typeof targetValue === "function")
-                return ((params: TranslationFunctionParamsBase) => computed(() => {
+                return ((params: TranslationFunctionParams) => computed(() => {
                     const paramsStringified = JSON.stringify(Object.fromEntries(Object.entries(params).map(([key, value]) => {
                         return [key, value.toString()]
                     })))
                     return currentKeyPath + key + paramsStringified
                 })) as TTranslationShape[TKey];
-            if (typeof targetValue === "object") return createProxyInner(targetValue as TTranslationShape[TKey] & TranslationShapeBase, currentKeyPath + key + ".") as TTranslationShape[TKey]
+            if (typeof targetValue === "object") return createProxyInner(targetValue as TTranslationShape[TKey] & TranslationShape, currentKeyPath + key + ".") as TTranslationShape[TKey]
             return targetValue;
         },
     })
@@ -46,9 +46,9 @@ function createProxyInner<TTranslationShape extends TranslationShapeBase>(target
  * @returns Proxy of {@link target}
  */
 
-export function createProxy<TTranslationShape extends TranslationShapeBase>(target: undefined): undefined;
-export function createProxy<TTranslationShape extends TranslationShapeBase>(target: TTranslationShape): TTranslationShape;
-export function createProxy<TTranslationShape extends TranslationShapeBase>(target: TTranslationShape | undefined): TTranslationShape | undefined
-export function createProxy<TTranslationShape extends TranslationShapeBase>(target: TTranslationShape | undefined): TTranslationShape | undefined {
+export function createProxy<TTranslationShape extends TranslationShape>(target: undefined): undefined;
+export function createProxy<TTranslationShape extends TranslationShape>(target: TTranslationShape): TTranslationShape;
+export function createProxy<TTranslationShape extends TranslationShape>(target: TTranslationShape | undefined): TTranslationShape | undefined
+export function createProxy<TTranslationShape extends TranslationShape>(target: TTranslationShape | undefined): TTranslationShape | undefined {
     return createProxyInner(target, "")
 }

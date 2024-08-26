@@ -1,7 +1,7 @@
 import { computed, Signal } from '@angular/core';
-import { TranslationShape } from '../i18n-config';
+import { Translation } from '../i18n-config';
 
-const de: TranslationShape = {
+const de: Translation = {
   title: 'Titel',
   interpolatable: (params: { text: Signal<string> }) =>
     computed(() => `Das ist ein intepolierter Wert: ${params.text()}`),

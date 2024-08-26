@@ -1,5 +1,5 @@
-import { Component, inject } from '@angular/core';
-import { SupportedLanguage } from '../../i18n/i18n-config';
+import { Component } from '@angular/core';
+import { Locale } from '../../i18n/i18n-config';
 import { LazyTranslationService } from './i18n/lazy-translation.service';
 
 @Component({
@@ -8,12 +8,13 @@ import { LazyTranslationService } from './i18n/lazy-translation.service';
 })
 export class LazyComponent {
 
-  protected translationService = inject(LazyTranslationService)
+  // protected translationService = inject(LazyTranslationService)
 
+  constructor(protected translationService: LazyTranslationService){}
 
-  protected onLanguageChange($event: Event): void {
+  protected onLocaleChange($event: Event): void {
     // this is not pretty but gets the job done
-    const lang = ($event.target as any).value as SupportedLanguage;
-    this.translationService.setLanguage(lang);
+    const lang = ($event.target as any).value as Locale;
+    this.translationService.setLocale(lang);
   }
 }
