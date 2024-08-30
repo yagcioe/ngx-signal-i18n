@@ -13,7 +13,7 @@ export class TranslationTestingService extends TranslationService {
     const translationMock = createProxy(en)
     // override the default translation with a proxy that return the access path instead of the value
     super(translationMock)
-    this.translation = translationMock;
+    this.translationMock = translationMock;
   }
 
   protected override async resolutionStrategy(_: Locale): Promise<Translation> {

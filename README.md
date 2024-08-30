@@ -16,7 +16,7 @@ This project is inspired by [typesafe-i18n](https://github.com/ivanhofer/typesaf
 🛠️ Template Interpolation Pipe: Provides a pipe for easy interpolation of translations in your templates.\
 🎭 Masking Utility: Provides utility types for omitting and picking specific translations which comes in handy when dealing with parameterized translations.\
 🦺 Testing Proxy: Includes a proxy utility to simplify mocking translations during testing.\
-🐤 Lightweight Build: ~ 1kb\
+🐤 Lightweight Build: ~ 1.5kb\
 📦 Minimal Dependencies\
 ⛔ No Magic: Just Typescript
 
@@ -152,13 +152,14 @@ console.log(omitted) // {b: "13", c: {e: {f: 15}, h: 16}}
 ![Translated de](./assets/omit.png)
 
 ## Configuration
+>In order to prevent a lot of syntax boilerplate to deal with undefined, having a language and translation loaded is required!
 ### 1. Define Main Translation Files
 Define the main translation which defines the structure every other Translation must follow
 
 ```ts
 // src/i18n/en/index.ts
 import { computed, Signal } from '@angular/core';
-import { TranslationShapeBase } from 'ngx-signal-i18n';
+import { TranslationShape} from 'ngx-signal-i18n';
 
 const en = {
   title: 'title',
@@ -172,33 +173,22 @@ const en = {
   simpleNest: {
     str: 'F',
   }
-} satisfies TranslationShapeBase;
+} satisfies TranslationShape;
 
 export default en;
 ```
 ### 2. Define Translation config
-
->In order to prevent a lot of syntax boilerplate to deal with undefined, having a default language and default translation is highly recommended!
-
 ```ts
 // src/i18n/i18n.config.ts
 import { InjectionToken } from '@angular/core';
-import { DefaultLanguageOf, TranslationConfigBase } from 'ngx-signal-i18n';
 import en from './en';
 
-export type SupportedLanguage = 'de' | 'en'
-export type TranslationShape = typeof en;
+export const Locales = ['de', 'en'] as const
+export type Locale = typeof Locales[number]
 
-export const translationConfig = {
-  defaultTranslation: en,
-  defaultLanguage: "en",
-  useCache: true
-} as const satisfies TranslationConfigBase<SupportedLanguage, TranslationShape>;
+export type Translation = typeof en;
 
-export type TranslationConfig = typeof translationConfig;
-export type DefaultLanguage = DefaultLanguageOf<TranslationConfig>;
-
-export const TranslationConfigToken = new InjectionToken<TranslationConfig>("translationConfig", { factory: () => translationConfig })
+export const DEFAULT_TRANSLATION = new InjectionToken<Translation>("DEFAULT_TRANSLATION")
 ```
 ### 3. Add another Translation to the project
 Add another translation that has the type of the main translation
@@ -206,9 +196,9 @@ Add another translation that has the type of the main translation
 ```ts
 // src/i18n/de/index.ts
 import { computed, Signal } from '@angular/core';
-import { TranslationShape } from '../i18n-config';
+import { Translation } from '../i18n-config';
 
-const de: TranslationShape = {
+const de: Translation = {
   title: 'Titel',
   interpolatable: (params: { text: Signal<string> }) =>
     computed(() => `Das ist ein intepolierter Wert: ${params.text()}`),
@@ -230,33 +220,49 @@ export default de;
 // src/i18n/translation.service.ts
 import { Inject, Injectable } from '@angular/core';
 import { NgxSignalI18nBaseService } from 'ngx-signal-i18n';
-import { SupportedLanguage, TranslationConfig, TranslationConfigToken, TranslationShape } from './i18n-config';
-
-export let globalLanguage: SupportedLanguage;
+import { DEFAULT_TRANSLATION, Locale, Translation } from './i18n-config';
 
 @Injectable({
   providedIn: 'root',
 })
-export class TranslationService extends NgxSignalI18nBaseService<SupportedLanguage, TranslationShape, TranslationConfig> {
+export class TranslationService extends NgxSignalI18nBaseService<Locale, Translation> {
 
-  constructor(@Inject(TranslationConfigToken) config: TranslationConfig) {
-    super(config);
+  constructor(@Inject(DEFAULT_TRANSLATION) defaultTranslation: Translation) {
+    super(defaultTranslation, true);
   }
 
-  protected override async resolutionStrategy(lang: SupportedLanguage): Promise<TranslationShape> {
+  protected override async resolutionStrategy(lang: Locale): Promise<Translation> {
     // lazy load translation file
     return (await import(`./${lang}/index.ts`)).default
   }
 }
 ```
-### 5. Include Translation files in tsconfig
+### 5. Add Providers to Angular DI
+```ts
+import { ApplicationConfig, provideExperimentalZonelessChangeDetection } from '@angular/core';
+import { provideLocale } from "ngx-signal-i18n";
+import en from '../i18n/en';
+import { DEFAULT_TRANSLATION, Locale } from '../i18n/i18n-config';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    // this app is zoneless
+    provideExperimentalZonelessChangeDetection(),
+    // hard code inital locale and Translation
+    provideLocale<Locale>("en"),
+    { provide: DEFAULT_TRANSLATION, useValue: en }
+  ]
+};
+```
+### 6. Include Translation files in tsconfig
 Add the following line to `tsconfig.app.json` and `tsconfig.spec.json` 
 ```json
 {
   "compilerOptions": {
     "include": [
-      "src/i18n/**/index.ts", // <-- add this line
+      "./src/**/i18n/**/index.ts", // <-- add this line
     ]
+  }
 }
 ```
 
@@ -266,23 +272,27 @@ When writing tests, the specific language often doesn't matter. This package pro
 Declare `TranslationTestingService`
 ```ts
 // src/i18n/translation-testing.service.ts
-import { Inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { createProxy } from 'ngx-signal-i18n';
-import { SupportedLanguage, TranslationConfig, TranslationConfigToken, TranslationShape } from './i18n-config';
+import en from './en';
+import { Locale, Translation } from './i18n-config';
 import { TranslationService } from './translation.service';
 
 @Injectable()
 export class TranslationTestingService extends TranslationService {
 
-  constructor(@Inject(TranslationConfigToken) config: TranslationConfig) {
+  private translationMock:Translation
+
+  constructor() {
+    const translationMock = createProxy(en)
     // override the default translation with a proxy that return the access path instead of the value
-    const testingConfig = { ...config, defaultTranslation: createProxy(config.defaultTranslation) };
-    super(testingConfig)
+    super(translationMock)
+    this.translationMock = translationMock;
   }
 
-  protected override async resolutionStrategy(_: SupportedLanguage): Promise<TranslationShape> {
+  protected override async resolutionStrategy(_: Locale): Promise<Translation> {
     // don't actually resolve translation because the proxy will return the same value anyway
-    return this.config.defaultTranslation
+    return this.translationMock
   }
 }
 ```
@@ -291,20 +301,30 @@ Replace `TranslationService` with `TranslationTestingService` with the Angular D
 
 ```ts 
 // app.component.spec.ts
+import {  provideExperimentalZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { TranslationTestingService } from '../i18n/translation-testing.service';
+import { TranslationService } from '../i18n/translation.service';
 import { AppComponent } from './app.component';
-import { TranslationService } from './translation/translation.service';
-import { TranslationTestingService } from './translation/translation-testing/translation-testing.service';
+import { provideLocale } from 'ngx-signal-i18n';
+import { DEFAULT_TRANSLATION } from '../i18n/i18n-config';
+import en from '../i18n/en';
+
 
 describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       providers: [
+        // this app is zoneless
+        provideExperimentalZonelessChangeDetection(),
         // replace TranslationService with TranslationTestingService for tests
+        provideLocale("en"),
+        { provide: DEFAULT_TRANSLATION, useValue: en },
         { provide: TranslationService, useClass: TranslationTestingService },
       ],
       imports: [AppComponent],
     }).compileComponents();
+
   });
 
   it('should create the app', () => {
@@ -312,6 +332,7 @@ describe('AppComponent', () => {
     const app = fixture.componentInstance;
     expect(app).toBeTruthy();
   });
+});
 ```
 ![Translated with TestingService](./assets/pageTranslatedTesting.png)
 

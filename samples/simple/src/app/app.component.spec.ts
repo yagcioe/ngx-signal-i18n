@@ -3,7 +3,9 @@ import { TestBed } from '@angular/core/testing';
 import { TranslationTestingService } from '../i18n/translation-testing.service';
 import { TranslationService } from '../i18n/translation.service';
 import { AppComponent } from './app.component';
-import { provideDefaultLocale } from 'ngx-signal-i18n';
+import { provideLocale } from 'ngx-signal-i18n';
+import { DEFAULT_TRANSLATION } from '../i18n/i18n-config';
+import en from '../i18n/en';
 
 
 describe('AppComponent', () => {
@@ -14,7 +16,8 @@ describe('AppComponent', () => {
         // this app is zoneless
         provideExperimentalZonelessChangeDetection(),
         // replace TranslationService with TranslationTestingService for tests
-        provideDefaultLocale("en"),
+        provideLocale("en"),
+        { provide: DEFAULT_TRANSLATION, useValue: en },
         { provide: TranslationService, useClass: TranslationTestingService },
         { provide: RealTranslationServiceToken, useClass: TranslationService }
       ],

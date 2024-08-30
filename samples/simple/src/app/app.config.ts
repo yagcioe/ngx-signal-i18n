@@ -1,7 +1,7 @@
-import { ApplicationConfig, InjectionToken, provideExperimentalZonelessChangeDetection } from '@angular/core';
+import { ApplicationConfig, provideExperimentalZonelessChangeDetection } from '@angular/core';
 import { provideLocale } from "ngx-signal-i18n";
 import en from '../i18n/en';
-import { DEFAULT_TRANSLATION, Locale, Translation } from '../i18n/i18n-config';
+import { DEFAULT_TRANSLATION, Locale } from '../i18n/i18n-config';
 
 export const appConfig: ApplicationConfig = {
   providers: [
