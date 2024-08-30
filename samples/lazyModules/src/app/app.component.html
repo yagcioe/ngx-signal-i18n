@@ -1,5 +1,5 @@
 <main>
-  <select (change)="onLanguageChange($event)">
+  <select (change)="onLanguageChange($event)" [value]="translationService.locale()">
     <option value="en">en</option>
     <option value="de">de</option>
   </select>

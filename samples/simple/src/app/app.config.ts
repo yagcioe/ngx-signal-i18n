@@ -1,15 +1,14 @@
 import { ApplicationConfig, InjectionToken, provideExperimentalZonelessChangeDetection } from '@angular/core';
-import { provideDefaultLocale } from "ngx-signal-i18n";
+import { provideLocale } from "ngx-signal-i18n";
 import en from '../i18n/en';
-import { Locale, Translation } from '../i18n/i18n-config';
-
-export const DEFAULT_TRANSLATION = new InjectionToken<Translation>("DEFAULT_TRANSLATION")
+import { DEFAULT_TRANSLATION, Locale, Translation } from '../i18n/i18n-config';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     // this app is zoneless
     provideExperimentalZonelessChangeDetection(),
-    provideDefaultLocale<Locale>("en"),
+    // hard code inital locale and Translation
+    provideLocale<Locale>("en"),
     { provide: DEFAULT_TRANSLATION, useValue: en }
   ]
 };

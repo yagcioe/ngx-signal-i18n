@@ -1,7 +1,6 @@
 import { Inject, Injectable } from '@angular/core';
 import { NgxSignalI18nBaseService } from 'ngx-signal-i18n';
-import { Locale, Translation } from './i18n-config';
-import { DEFAULT_TRANSLATION } from '../app/app.config';
+import { DEFAULT_TRANSLATION, Locale, Translation } from './i18n-config';
 
 @Injectable({
   providedIn: 'root',

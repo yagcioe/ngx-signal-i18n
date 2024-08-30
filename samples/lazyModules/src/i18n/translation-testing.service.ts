@@ -12,7 +12,7 @@ export class TranslationTestingService extends TranslationService {
   constructor() {
     // override the default translation with a proxy that return the access path instead of the value
     const translation = createProxy(en)
-    super(translation)
+    super({ translation })
     this.translationMock = translation
   }
 

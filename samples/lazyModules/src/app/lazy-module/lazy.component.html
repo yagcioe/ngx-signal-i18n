@@ -1,7 +1,7 @@
 {{translationService.translation().lazyTitle}}
 <span>works</span>
 
-<select (change)="onLocaleChange($event)">
+<select (change)="onLocaleChange($event)" [value]="translationService.locale()">
     <option value="en">en</option>
     <option value="de">de</option>
 </select>

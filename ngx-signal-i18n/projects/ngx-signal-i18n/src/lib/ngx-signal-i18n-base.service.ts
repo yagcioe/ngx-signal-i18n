@@ -12,6 +12,8 @@ export abstract class NgxSignalI18nBaseService<TLocale extends LocaleBase, TTran
 
   #translation;
 
+  public locale = this.localeProvider.locale
+
   /**
    * {@link Signal} that holds the current Translation
    */
@@ -28,19 +30,19 @@ export abstract class NgxSignalI18nBaseService<TLocale extends LocaleBase, TTran
     effect(() => {
       const locale = this.localeProvider.locale();
       if (!locale) {
-        this.setTranslation(undefined as any)
+        this.#translation.set(undefined as any)
         return;
       }
 
       if (this.useCache) {
-        const cachedValue = this.getCache(locale);
+        const cachedValue = this.cache[locale];
         if (!!cachedValue) {
           this.#translation.set(cachedValue)
           return;
         }
       }
 
-      this.loadTranslation(locale)
+      this.resolutionStrategy(locale).then((translations) => this.onLocaleResolution(locale, translations))
     }, { allowSignalWrites: true })
   }
 
@@ -52,35 +54,12 @@ export abstract class NgxSignalI18nBaseService<TLocale extends LocaleBase, TTran
     this.localeProvider.setLocale(locale)
   }
 
-  protected loadTranslation(locale: TLocale): Promise<void> {
-    return this.resolutionStrategy(locale).then((translations) => this.onLocaleResolution(locale, translations))
-  }
-
   /**
    * Loads the provided language. 
    * @param lang Language that should be loaded
    * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import import() }
    */
   protected abstract resolutionStrategy(lang: TLocale): Promise<TTranslation>;
-
-  /**
-   * updates the translation sigal with the provided value
-   * @param translationShape value to be set
-   */
-  protected setTranslation(translationShape: TTranslation) {
-    this.#translation.set(translationShape)
-  }
-
-  /**
-   * sets the value into the cache if enabled
-   * @param locale locale to set the value for
-   * @param translationShape value to be set
-   */
-  protected setCache(locale: TLocale, translationShape: TTranslation) {
-    if (this.useCache) {
-      this.cache[locale] = translationShape
-    }
-  }
 
   /**
    * function that defines the behaviour when a locale has been loaded
@@ -90,17 +69,10 @@ export abstract class NgxSignalI18nBaseService<TLocale extends LocaleBase, TTran
    * @param translationShape translation that has been loaded
    */
   protected onLocaleResolution(locale: TLocale, translationShape: TTranslation) {
-    this.setCache(locale, translationShape)
-    this.setTranslation(translationShape)
-  }
-
-  /**
-   * 
-   * @param locale locale to look up
-   * @returns cached value for provided locale
-   */
-  protected getCache(locale: TLocale): TTranslation | undefined {
-    return this.cache[locale]
+    if (this.useCache) {
+      this.cache[locale] = translationShape
+    }
+    this.#translation.set(translationShape)
   }
 
   /**
