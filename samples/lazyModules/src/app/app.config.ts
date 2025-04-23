@@ -1,4 +1,4 @@
-import { APP_INITIALIZER, ApplicationConfig, inject, provideExperimentalZonelessChangeDetection } from '@angular/core';
+import { ApplicationConfig, inject, provideExperimentalZonelessChangeDetection, provideAppInitializer } from '@angular/core';
 import { provideRouter, Routes } from '@angular/router';
 import { LocaleProvider, provideBrowserLocale } from 'ngx-signal-i18n';
 import { DEFAULT_TRANSLATION, DefaultTranslationWrapper, Locale, Locales } from '../i18n/i18n-config';
@@ -30,12 +30,12 @@ export const appConfig: ApplicationConfig = {
     provideBrowserLocale<Locale>(Locales, "en"),
     // value for the default translation is set in the APP_INITALIZER
     { provide: DEFAULT_TRANSLATION, useValue: {} },
-    {
-      provide: APP_INITIALIZER, multi: true, deps: [LocaleProvider, DEFAULT_TRANSLATION],
-      useFactory: (localeProvider: LocaleProvider<Locale>, defaultTranslation: DefaultTranslationWrapper) =>
+    provideAppInitializer(() => {
+        const initializerFn = ((localeProvider: LocaleProvider<Locale>, defaultTranslation: DefaultTranslationWrapper) =>
         async () => {
           defaultTranslation.translation = await import(`../i18n/${localeProvider.locale()}/index.ts`).then(m => m.default);
-        }
-    }
+        })(inject(LocaleProvider), inject(DEFAULT_TRANSLATION));
+        return initializerFn();
+      })
   ]
 };

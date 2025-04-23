@@ -3,8 +3,9 @@ import { Locale } from '../../i18n/i18n-config';
 import { LazyTranslationService } from './i18n/lazy-translation.service';
 
 @Component({
-  selector: 'app-lazy',
-  templateUrl: './lazy.component.html',
+    selector: 'app-lazy',
+    templateUrl: './lazy.component.html',
+    standalone: false
 })
 export class LazyComponent {
 

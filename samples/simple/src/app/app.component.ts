@@ -4,10 +4,9 @@ import { Locale } from '../i18n/i18n-config';
 import { TranslationService } from '../i18n/translation.service';
 
 @Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [InterpolatePipe],
-  templateUrl: './app.component.html',
+    selector: 'app-root',
+    imports: [InterpolatePipe],
+    templateUrl: './app.component.html'
 })
 export class AppComponent {
   protected translationService = inject(TranslationService);

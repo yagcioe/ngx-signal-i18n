@@ -3,12 +3,12 @@ import { Translation } from '../i18n-config';
 
 const de: Translation = {
   title: 'Titel',
-  interpolatable: (params: { text: Signal<string> }) =>
-    computed(() => `Das ist ein intepolierter Wert: ${params.text()}`),
+  interpolatable: (opt: { text: Signal<string> }) =>
+    computed(() => `Das ist ein intepolierter Wert: ${opt.text()}`),
   nest: {
     title: 'geschachtelter Titel',
-    anotherInterpolatedValue: (params: { num: Signal<number> }) =>
-      computed(() => `Das ist ein geschachtelter interpolierter Wert ${params.num()}`),
+    anotherInterpolatedValue: (opt: { num: Signal<number> }) =>
+      computed(() => `Das ist ein geschachtelter interpolierter Wert ${opt.num()}`),
   },
   simpleNest: {
     str: 'F',
