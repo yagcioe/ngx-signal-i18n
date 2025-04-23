@@ -1,7 +1,7 @@
-import { ApplicationConfig, inject, provideExperimentalZonelessChangeDetection, provideAppInitializer } from '@angular/core';
+import { ApplicationConfig, inject, provideAppInitializer, provideExperimentalZonelessChangeDetection } from '@angular/core';
 import { provideRouter, Routes } from '@angular/router';
 import { LocaleProvider, provideBrowserLocale } from 'ngx-signal-i18n';
-import { DEFAULT_TRANSLATION, DefaultTranslationWrapper, Locale, Locales } from '../i18n/i18n-config';
+import { DEFAULT_TRANSLATION, Locale, Locales } from '../i18n/i18n-config';
 
 function initalizeLazyModule(): Promise<boolean> {
   // this must be called before the import statement to remain in a injection context
@@ -18,7 +18,7 @@ const routes: Routes = [{
     initalizeLazyModule
   ],
   // this does not actually load the module but provides just the routes to Angular
-  loadChildren: () => import("./lazy-module/lazy.module").then(m => m.LazyModule),
+  loadChildren: () => import("./lazy-module/lazy.module").then(m =>  m.LazyModule),
 
 }]
 
@@ -30,12 +30,8 @@ export const appConfig: ApplicationConfig = {
     provideBrowserLocale<Locale>(Locales, "en"),
     // value for the default translation is set in the APP_INITALIZER
     { provide: DEFAULT_TRANSLATION, useValue: {} },
-    provideAppInitializer(() => {
-        const initializerFn = ((localeProvider: LocaleProvider<Locale>, defaultTranslation: DefaultTranslationWrapper) =>
-        async () => {
-          defaultTranslation.translation = await import(`../i18n/${localeProvider.locale()}/index.ts`).then(m => m.default);
-        })(inject(LocaleProvider), inject(DEFAULT_TRANSLATION));
-        return initializerFn();
-      })
+    provideAppInitializer(async () => {
+      inject(DEFAULT_TRANSLATION).translation = await import(`../i18n/${inject(LocaleProvider).locale()}/index.ts`).then(m => m.default);
+    })
   ]
 };
