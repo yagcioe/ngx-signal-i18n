@@ -1,5 +1,5 @@
 import { computed, Signal } from '@angular/core';
-import { TranslationShape} from 'ngx-signal-i18n';
+import { TranslationShape } from 'ngx-signal-i18n';
 
 const en = {
   title: 'title',

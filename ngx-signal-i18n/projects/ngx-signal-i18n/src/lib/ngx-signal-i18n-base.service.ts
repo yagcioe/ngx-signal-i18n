@@ -1,4 +1,4 @@
-import { effect, inject, signal, Signal } from "@angular/core";
+import { inject, resource, Signal } from "@angular/core";
 import { LocaleBase, TranslationShape } from "./i18n.types";
 import { LocaleProvider } from "./locale-provider";
 
@@ -24,26 +24,25 @@ export abstract class NgxSignalI18nBaseService<TLocale extends LocaleBase, TTran
       this.cache[this.localeProvider.locale()] = defaultTranslation as TTranslation;
     }
 
-    this.#translation = signal<TTranslation>(defaultTranslation)
-    this.translation = this.#translation.asReadonly();
+    this.#translation = resource({
+      request: () => this.localeProvider.locale(),
+      defaultValue: defaultTranslation,
+      loader: async (request) => {
+        const locale = request.request
 
-    effect(() => {
-      const locale = this.localeProvider.locale();
-      if (!locale) {
-        this.#translation.set(undefined as any)
-        return;
-      }
-
-      if (this.useCache) {
-        const cachedValue = this.cache[locale];
-        if (!!cachedValue) {
-          this.#translation.set(cachedValue)
-          return;
+        if (this.useCache) {
+          const cachedTranslation = this.cache[locale];
+          if (!!cachedTranslation) {
+            return cachedTranslation
+          }
         }
-      }
 
-      this.resolutionStrategy(locale).then((translations) => this.onLocaleResolution(locale, translations))
-    }, { allowSignalWrites: true })
+        const translation = await this.resolutionStrategy(locale);
+        this.setCache(locale, translation);
+        return translation;
+      }
+    })
+    this.translation = this.#translation.value.asReadonly();
   }
 
   /**
@@ -68,11 +67,10 @@ export abstract class NgxSignalI18nBaseService<TLocale extends LocaleBase, TTran
    * @param locale locale that has been loaded
    * @param translationShape translation that has been loaded
    */
-  protected onLocaleResolution(locale: TLocale, translationShape: TTranslation) {
+  protected setCache(locale: TLocale, translationShape: TTranslation) {
     if (this.useCache) {
       this.cache[locale] = translationShape
     }
-    this.#translation.set(translationShape)
   }
 
   /**
