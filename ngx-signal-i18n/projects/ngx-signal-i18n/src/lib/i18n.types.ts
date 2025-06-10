@@ -1,8 +1,4 @@
-import { type Signal } from '@angular/core';
-
-export type TranslationFunctionParams = Record<string, Signal<any>>
-
-export type TranslationFunction<TParams extends TranslationFunctionParams> = (opt: TParams) => Signal<string>;
+export type ReactiveTranslationFunction<TParams extends readonly any[]> = (...opt: [...TParams]) => string;
 
 export type TranslationShape = {
   [key: string]: TranslationValue;
@@ -10,7 +6,7 @@ export type TranslationShape = {
 
 export type TranslationValue =
   string |
-  TranslationFunction<any> |
+  ReactiveTranslationFunction<any> |
   TranslationShape;
 
 export type LocaleBase = string;

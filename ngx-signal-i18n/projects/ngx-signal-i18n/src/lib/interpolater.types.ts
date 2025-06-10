@@ -1,13 +1,16 @@
-import { type TranslationFunction, type TranslationShape, type TranslationValue } from "./i18n.types";
+import { Signal } from "@angular/core";
+import { type ReactiveTranslationFunction, type TranslationShape, type TranslationValue } from "./i18n.types";
 
-type GetTranslationFunctionParameter<
-    TFunction extends TranslationFunction<any>
-> = TFunction extends TranslationFunction<infer TParams> ? TParams : never;
+type Prettify<T> =
+    {
+        [k in keyof T]: T[k]
+    } & {}
+
 
 type InterpolateTranslationShapeOptions<
     TType extends TranslationShape
 > = {
-        [key in keyof TType as TType[key] extends TranslationFunction<any>
+        [key in keyof TType as TType[key] extends ReactiveTranslationFunction<any>
         ? key
         : TType[key] extends TranslationShape
         ? keyof InterpolationOptions<TType[key]> extends never
@@ -19,10 +22,10 @@ type InterpolateTranslationShapeOptions<
 export type InterpolationOptions<TType extends TranslationValue> =
     TType extends string
     ? undefined
-    : TType extends TranslationFunction<any>
-    ? GetTranslationFunctionParameter<TType>
+    : TType extends ReactiveTranslationFunction<any>
+    ? Parameters<TType>
     : TType extends TranslationShape
-    ? InterpolateTranslationShapeOptions<TType>
+    ? Prettify<InterpolateTranslationShapeOptions<TType>>
     : never;
 
 type InterpolatedTranslationShape<TType extends TranslationShape> = {
@@ -32,8 +35,9 @@ type InterpolatedTranslationShape<TType extends TranslationShape> = {
 export type InterpolatedTranslation<TType extends TranslationValue> =
     TType extends string
     ? TType
-    : TType extends TranslationFunction<any>
-    ? ReturnType<TType>
+    : TType extends ReactiveTranslationFunction<any>
+    ? Signal<ReturnType<TType>>
     : TType extends TranslationShape
     ? InterpolatedTranslationShape<TType>
+    : TType extends undefined ? undefined
     : never;

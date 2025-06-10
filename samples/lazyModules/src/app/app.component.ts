@@ -5,10 +5,10 @@ import { Locale } from '../i18n/i18n-config';
 import { TranslationService } from '../i18n/translation.service';
 
 @Component({
-    selector: 'app-root',
-    // providers: [{ provide: TranslationService, useClass: TranslationTestingService }],
-    imports: [InterpolatePipe, RouterModule],
-    templateUrl: './app.component.html'
+  selector: 'app-root',
+  // providers: [{ provide: TranslationService, useClass: TranslationTestingService }],
+  imports: [InterpolatePipe, RouterModule],
+  templateUrl: './app.component.html'
 })
 export class AppComponent {
   protected translationService = inject(TranslationService);
@@ -22,9 +22,9 @@ export class AppComponent {
     const translationRoot = this.translationService.translation()
     // typesafe interpolarization of parameterized text only
     return interpolate(translationRoot, {
-      interpolatable: { text: this.textSignal },
+      interpolatable: [this.textSignal],
       nest: {
-        anotherInterpolatedValue: { num: this.numSignal }
+        anotherInterpolatedValue: [this.numSignal]
       }
     });
   });

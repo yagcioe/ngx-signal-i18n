@@ -1,5 +1,4 @@
-import { computed } from "@angular/core";
-import { type TranslationFunctionParams, type TranslationShape } from "./i18n.types";
+import { type TranslationShape } from "./i18n.types";
 
 function createProxyInner<TTranslationShape extends TranslationShape>(target: TTranslationShape | undefined, currentKeyPath: string): TTranslationShape | undefined {
     if (target === undefined) return undefined
@@ -9,12 +8,9 @@ function createProxyInner<TTranslationShape extends TranslationShape>(target: TT
             const targetValue = target[key];
             if (typeof targetValue === "string") return currentKeyPath + key as TTranslationShape[TKey];
             if (typeof targetValue === "function")
-                return ((params: TranslationFunctionParams) => computed(() => {
-                    const paramsStringified = JSON.stringify(Object.fromEntries(Object.entries(params).map(([key, value]) => {
-                        return [key, value.toString()]
-                    })))
-                    return currentKeyPath + key + paramsStringified
-                })) as TTranslationShape[TKey];
+                return ((...params: any[]) => {
+                    return currentKeyPath + key + JSON.stringify(params);
+                }) as TTranslationShape[TKey];
             if (typeof targetValue === "object") return createProxyInner(targetValue as TTranslationShape[TKey] & TranslationShape, currentKeyPath + key + ".") as TTranslationShape[TKey]
             return targetValue;
         },

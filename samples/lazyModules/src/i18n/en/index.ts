@@ -1,14 +1,12 @@
-import { computed, Signal } from '@angular/core';
+import { Signal } from '@angular/core';
 import { TranslationShape } from 'ngx-signal-i18n';
 
 const en = {
   title: 'title',
-  interpolatable: (opt: { text: Signal<string> }) =>
-    computed(() => `this is a interpolated value: ${opt.text()}`),
+  interpolatable: (text: Signal<string>) => `this is a interpolated value: ${text()}`,
   nest: {
     title: 'nested title',
-    anotherInterpolatedValue: (opt: { num: Signal<number> }) =>
-      computed(() => `this is a nested value ${opt.num()}`),
+    anotherInterpolatedValue: (num: Signal<number>) => `this is a nested value ${num()}`,
   },
   simpleNest: {
     str: 'F',

@@ -19,12 +19,10 @@ describe("interpolator", () => {
     it("should translate shape", () => {
         const shape = {
             title: 'Titel',
-            interpolateable: (params: { value: Signal<string> }) =>
-                computed(() => `Das ist ein intepolierter Wert: ${params.value()}`),
+            interpolateable: (value: Signal<string>) => `Das ist ein intepolierter Wert: ${value()}`,
             nest: {
                 title: 'geschachtelter Titel',
-                anotherInterpolatedValue: (params: { num: Signal<number> }) =>
-                    computed(() => `Das ist ein geschachtelter interpolierter Wert ${params.num()}`),
+                anotherInterpolatedValue: (num: Signal<number>) => `Das ist ein geschachtelter interpolierter Wert ${num()}`,
             },
             simpleNest: {
                 str: 'F',
@@ -32,13 +30,9 @@ describe("interpolator", () => {
         } satisfies TranslationShape;
 
         const options = {
-            interpolateable: {
-                value: signal("")
-            },
+            interpolateable: [signal("")],
             nest: {
-                anotherInterpolatedValue: {
-                    num: signal(0)
-                }
+                anotherInterpolatedValue: [signal(0)]
             }
         } satisfies InterpolationOptions<typeof shape>
 
@@ -75,18 +69,17 @@ describe("interpolator", () => {
 
     it("should with translate empty parameters", () => {
         const shape = {
-            interpolateable: () =>
-                computed(() => `Das ist ein intepolierter Wert:`),
+            interpolateable: () => `Das ist ein intepolierter Wert:`,
             nest: {
                 anotherInterpolatedValue: () =>
-                    computed(() => `Das ist ein geschachtelter interpolierter Wert`),
+                    `Das ist ein geschachtelter interpolierter Wert`,
             },
         } satisfies TranslationShape;
 
         const options = {
-            interpolateable: {},
+            interpolateable: [],
             nest: {
-                anotherInterpolatedValue: {}
+                anotherInterpolatedValue: []
             }
         } satisfies InterpolationOptions<typeof shape>
 
@@ -127,8 +120,8 @@ describe("interpolator", () => {
 
     it("should interpolate minmal translations", () => {
         const str = interpolate("str", undefined);
-        const fun = interpolate(() => computed(() => "test"), {});
-        const funWithParams = interpolate((params: { test: Signal<number> }) => computed(() => `test${params.test()}`), { test: signal(2) });
+        const fun = interpolate(() => "test", []);
+        const funWithParams = interpolate((test: Signal<number>) => `test${test()}`, [signal(2)]);
         expect(stringify(str)).toEqual(stringify("str"));
         expect(stringify(fun)).toEqual(stringify(computed(() => "test")));
         expect(stringify(funWithParams)).toEqual(stringify(computed(() => "test2")));
@@ -145,8 +138,7 @@ describe("interpolator", () => {
 
         const interpolatebleShape = {
             title: 'Titel',
-            interpolateable: (params: { value: Signal<string> }) =>
-                computed(() => `Das ist ein intepolierter Wert: ${params.value()}`),
+            interpolateable: (value: Signal<string>) => `Das ist ein intepolierter Wert: ${value()}`,
 
         } satisfies TranslationShape;
 
@@ -158,8 +150,8 @@ describe("interpolator", () => {
 
         const simpleOptions = {} satisfies InterpolationOptions<typeof simpleShape>;
         const simpleOptions2 = { test: "" } satisfies InterpolationOptions<typeof simpleShape>;
-        const interpolatableOptions = { interpolateable: { value: computed(() => "") } } satisfies InterpolationOptions<typeof interpolatebleShape>;
-        const interpolatableOptions2 = { interpolateable: { value: computed(() => ""), test: "" } };
+        const interpolatableOptions = { interpolateable: [computed(() => "")] } satisfies InterpolationOptions<typeof interpolatebleShape>;
+        const interpolatableOptions2 = { interpolateable: [computed(() => ""), ""] };
 
         {
             const testOptions1: Expect<Equal<InterpolationOptions<typeof simpleShape>, typeof simpleOptions>> = true;

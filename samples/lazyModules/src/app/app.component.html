@@ -31,13 +31,13 @@
   <h3>{{ translationService.translation().nest.title | interpolate: undefined}}</h3>
 
   <!-- inline intepolation of nested object is possible as well but rather questionable -->
-  <h3>{{ (translationService.translation().nest | interpolate: { anotherInterpolatedValue: { num: numSignal }
+  <h3>{{ (translationService.translation().nest | interpolate: { anotherInterpolatedValue: [numSignal]
     }).anotherInterpolatedValue() }}</h3>
-  <h3>{{ (translationService.translation().nest | interpolate: { anotherInterpolatedValue: { num: numSignal } }).title
+  <h3>{{ (translationService.translation().nest | interpolate: { anotherInterpolatedValue: [numSignal]}).title
     }}</h3>
 
   <!-- inline interpolation for parameterized translations  -->
   <!-- mind the brackets because interpolate returns a computed  -->
-  <h3>{{ (translationService.translation().nest.anotherInterpolatedValue | interpolate: {num: numSignal})() }}</h3>
-  <h3>{{ (translationService.translation().interpolatable | interpolate: {text: textSignal})() }}</h3>
+  <h3>{{ (translationService.translation().nest.anotherInterpolatedValue | interpolate: [numSignal])() }}</h3>
+  <h3>{{ (translationService.translation().interpolatable | interpolate: [textSignal])() }}</h3>
 </main>

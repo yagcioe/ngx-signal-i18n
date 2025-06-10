@@ -1,14 +1,13 @@
-import { computed, Signal } from '@angular/core';
+import { Signal } from '@angular/core';
 import { Translation } from '../i18n-config';
 
 const de: Translation = {
   title: 'Titel',
-  interpolatable: (opt: { text: Signal<string> }) =>
-    computed(() => `Das ist ein intepolierter Wert: ${opt.text()}`),
+  interpolatable: (text: Signal<string>) => `Das ist ein intepolierter Wert: ${text()}`,
   nest: {
     title: 'geschachtelter Titel',
-    anotherInterpolatedValue: (opt: { num: Signal<number> }) =>
-      computed(() => `Das ist ein geschachtelter interpolierter Wert ${opt.num()}`),
+    anotherInterpolatedValue: (num: Signal<number>) => `Das ist ein geschachtelter interpolierter Wert ${num()}`,
+    constantInterpolatedValue: (num: Signal<number>, consantVar: string) => `Das ist ein geschachtelter interpolierter Wert ${num()} mit nicht reaktivem Wert ${consantVar}`,
   },
   simpleNest: {
     str: 'F',

@@ -1,4 +1,4 @@
-import { NgModule, provideEnvironmentInitializer, Signal } from '@angular/core';
+import { NgModule, Signal } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { Locale } from '../../i18n/i18n-config';
 import { LAZY_DEFAULT_TRANSLATION, LazyTranslation } from './i18n/i18n.config';
