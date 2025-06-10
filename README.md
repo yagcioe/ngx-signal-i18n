@@ -66,14 +66,13 @@ npm i ngx-signal-i18n
 
   <!-- inline intepolation of nested object is possible as well but rather questionable -->
   <h3>{{ (translationService.translation().nest
-    | interpolate: { anotherInterpolatedValue: { num: numSignal } }).anotherInterpolatedValue() }}</h3>
-  <h3>{{ (translationService.translation().nest | interpolate: { anotherInterpolatedValue: { num: numSignal } }).title
-    }}</h3>
+    | interpolate: { anotherInterpolatedValue: [numSignal] }).anotherInterpolatedValue() }}</h3>
+  <h3>{{ (translationService.translation().nest | interpolate: { anotherInterpolatedValue: [numSignal]}).title }}</h3>
 
   <!-- inline interpolation for parameterized translations  -->
   <!-- mind the brackets because | interpolate returns a computed  -->
-  <h3>{{ (translationService.translation().nest.anotherInterpolatedValue | interpolate: {num: numSignal})() }}</h3>
-  <h3>{{ (translationService.translation().interpolatable | interpolate: {text: textSignal})() }}</h3>
+  <h3>{{ (translationService.translation().nest.anotherInterpolatedValue | interpolate: [numSignal])() }}</h3>
+  <h3>{{ (translationService.translation().interpolatable | interpolate: [textSignal])() }}</h3>
 </main>
 ```
 
@@ -98,8 +97,8 @@ export class AppComponent {
 
   protected interpolatedTranslations = computed(() => {
     return interpolate(this.translationService.translation(), {
-      interpolatable: { text: this.textSignal },
-      nest: { anotherInterpolatedValue: { num: this.numSignal } }
+      interpolatable: [this.textSignal],
+      nest: { anotherInterpolatedValue: [this.numSignal] }
     })
   })
 
@@ -163,12 +162,10 @@ import { TranslationShape} from 'ngx-signal-i18n';
 
 const en = {
   title: 'title',
-  interpolatable: (params: { text: Signal<string> }) =>
-    computed(() => `this is a interpolated value: ${params.text()}`),
+  interpolatable: (text: Signal<string>) => `this is a interpolated value: ${text()}`,
   nest: {
     title: 'nested title',
-    anotherInterpolatedValue: (params: { num: Signal<number> }) =>
-      computed(() => `this is a nested value ${params.num()}`),
+    anotherInterpolatedValue: (Signal<number>) => `this is a nested value ${num()}`,
   },
   simpleNest: {
     str: 'F',
@@ -200,12 +197,10 @@ import { Translation } from '../i18n-config';
 
 const de: Translation = {
   title: 'Titel',
-  interpolatable: (params: { text: Signal<string> }) =>
-    computed(() => `Das ist ein intepolierter Wert: ${params.text()}`),
+  interpolatable: (text: Signal<string>) => `Das ist ein intepolierter Wert: ${text()}`,
   nest: {
     title: 'geschachtelter Titel',
-    anotherInterpolatedValue: (params: { num: Signal<number> }) =>
-      computed(() => `Das ist ein geschachtelter interpolierter Wert ${params.num()}`),
+    anotherInterpolatedValue: (num: Signal<number>) => `Das ist ein geschachtelter interpolierter Wert ${num()}`,
   },
   simpleNest: {
     str: 'F',
