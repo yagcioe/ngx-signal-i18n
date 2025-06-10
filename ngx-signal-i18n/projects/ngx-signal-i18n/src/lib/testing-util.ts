@@ -1,4 +1,5 @@
 import { type TranslationShape } from "./i18n.types";
+import { stringify } from "./private-util";
 
 function createProxyInner<TTranslationShape extends TranslationShape>(target: TTranslationShape | undefined, currentKeyPath: string): TTranslationShape | undefined {
     if (target === undefined) return undefined
@@ -9,7 +10,7 @@ function createProxyInner<TTranslationShape extends TranslationShape>(target: TT
             if (typeof targetValue === "string") return currentKeyPath + key as TTranslationShape[TKey];
             if (typeof targetValue === "function")
                 return ((...params: any[]) => {
-                    return currentKeyPath + key + JSON.stringify(params);
+                    return currentKeyPath + key + stringify(params);
                 }) as TTranslationShape[TKey];
             if (typeof targetValue === "object") return createProxyInner(targetValue as TTranslationShape[TKey] & TranslationShape, currentKeyPath + key + ".") as TTranslationShape[TKey]
             return targetValue;

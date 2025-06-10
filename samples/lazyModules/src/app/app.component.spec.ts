@@ -39,7 +39,7 @@ describe('AppComponent', () => {
     console.log(translationService)
     expect(translationService.translation().title).toBe("title")
     expect(translationService.translation().nest.title).toBe("nest.title")
-    expect(translationService.translation().nest.anotherInterpolatedValue({ num: signal(12) })()).toBe('nest.anotherInterpolatedValue{"num":"[Signal: 12]"}')
+    expect(translationService.translation().nest.anotherInterpolatedValue(signal(12))).toBe('nest.anotherInterpolatedValue["[Signal: 12]"]')
   })
 
   it('should use real translations and update', (done) => {
@@ -48,10 +48,11 @@ describe('AppComponent', () => {
     const translationService = TestBed.inject<TranslationService>(RealTranslationServiceToken)
     expect(translationService.translation().title).toBe("title")
     expect(translationService.translation().nest.title).toBe("nested title")
-    expect(translationService.translation().nest.anotherInterpolatedValue({ num: signal(12) })()).toBe('this is a nested value 12')
+    expect(translationService.translation().nest.anotherInterpolatedValue(signal(12))).toBe('this is a nested value 12')
 
 
     let skip = true;
+    const num = signal(12);
     runInInjectionContext(injector, () => {
       effect(() => {
         //subscribe to translation changes
@@ -60,10 +61,9 @@ describe('AppComponent', () => {
         //skip inital effect run in order to run after the new translation has been pushed by language.set("de")
         if (!skip) {
           // detect changes in order to pull singal changes @see 
-          fixture.detectChanges();
           expect(translationService.translation().title).toBe("Titel")
           expect(translationService.translation().nest.title).toBe("geschachtelter Titel")
-          expect(translationService.translation().nest.anotherInterpolatedValue({ num: signal(12) })()).toBe('Das ist ein geschachtelter interpolierter Wert 12')
+          expect(translationService.translation().nest.anotherInterpolatedValue(num)).toBe('Das ist ein geschachtelter interpolierter Wert 12')
           //mark test as done
           done()
         }
@@ -72,6 +72,7 @@ describe('AppComponent', () => {
     });
     //
     translationService.setLocale("de")
+    fixture.detectChanges();
   })
 
 });

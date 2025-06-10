@@ -1,6 +1,7 @@
 import { computed, signal, Signal } from "@angular/core";
 import { interpolate, InterpolatedTranslation, InterpolationOptions, TranslationShape } from "ngx-signal-i18n";
 import { Equal, Expect, Extends } from "./testing-util.spec";
+import { stringify } from "./private-util";
 
 describe("interpolator", () => {
 
@@ -166,13 +167,4 @@ describe("interpolator", () => {
         }
         expect(true).toBeTrue()
     })
-
-    function stringify(obj: any): string {
-        return JSON.stringify(obj, (_, value) => {
-            if (typeof value === "function") {
-                return (value as Function).toString()
-            }
-            return value
-        })
-    }
 })
