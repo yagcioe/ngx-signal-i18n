@@ -153,11 +153,12 @@ console.log(omitted) // {b: "13", c: {e: {f: 15}, h: 16}}
 ## Configuration
 >In order to prevent a lot of syntax boilerplate to deal with undefined, having a language and translation loaded is required!
 ### 1. Define Main Translation Files
-Define the main translation which defines the structure every other Translation must follow
+Define the main translation which defines the structure every other Translation must follow.
+>Every function is run in a reactive context. Therefore calling any signal within the function will result in reevaluation when the called signal updates!
 
 ```ts
 // src/i18n/en/index.ts
-import { computed, Signal } from '@angular/core';
+import { Signal } from '@angular/core';
 import { TranslationShape} from 'ngx-signal-i18n';
 
 const en = {
@@ -165,7 +166,7 @@ const en = {
   interpolatable: (text: Signal<string>) => `this is a interpolated value: ${text()}`,
   nest: {
     title: 'nested title',
-    anotherInterpolatedValue: (Signal<number>) => `this is a nested value ${num()}`,
+    anotherInterpolatedValue: (num: Signal<number>) => `this is a nested value ${num()}`,
   },
   simpleNest: {
     str: 'F',
@@ -192,7 +193,7 @@ Add another translation that has the type of the main translation
 
 ```ts
 // src/i18n/de/index.ts
-import { computed, Signal } from '@angular/core';
+import { Signal } from '@angular/core';
 import { Translation } from '../i18n-config';
 
 const de: Translation = {
